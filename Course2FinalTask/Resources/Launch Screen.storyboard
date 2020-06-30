@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="y7O-sa-SvB">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="ypR-G0-znf">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="y7O-sa-SvB" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="fyi-j9-dF9">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OD0-Hp-a0O">
+                                <rect key="frame" x="16" y="74" width="382" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="aLc-PE-iQN"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="send" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S5s-92-3Qj">
+                                <rect key="frame" x="16" y="122" width="382" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="hzs-uO-Ain"/>
+                                    <constraint firstAttribute="height" constant="40" id="zz9-sT-nfd"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="send" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                            </textField>
+                            <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N0b-6G-W05">
+                                <rect key="frame" x="16" y="262" width="382" height="50"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="E5f-89-EP9"/>
+                                </constraints>
+                                <state key="normal">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="2Zh-Kb-b8p" firstAttribute="trailing" secondItem="OD0-Hp-a0O" secondAttribute="trailing" constant="16" id="0nr-IS-eaq"/>
+                            <constraint firstItem="N0b-6G-W05" firstAttribute="top" secondItem="S5s-92-3Qj" secondAttribute="bottom" constant="100" id="29A-Oj-fRh"/>
+                            <constraint firstItem="S5s-92-3Qj" firstAttribute="top" secondItem="OD0-Hp-a0O" secondAttribute="bottom" constant="8" id="JGc-zW-fR8"/>
+                            <constraint firstItem="S5s-92-3Qj" firstAttribute="leading" secondItem="2Zh-Kb-b8p" secondAttribute="leading" constant="16" id="MlJ-g2-gIk"/>
+                            <constraint firstItem="OD0-Hp-a0O" firstAttribute="top" secondItem="2Zh-Kb-b8p" secondAttribute="top" constant="30" id="Rx2-Lw-1jg"/>
+                            <constraint firstItem="2Zh-Kb-b8p" firstAttribute="trailing" secondItem="N0b-6G-W05" secondAttribute="trailing" constant="16" id="UnM-Pm-67X"/>
+                            <constraint firstItem="N0b-6G-W05" firstAttribute="leading" secondItem="2Zh-Kb-b8p" secondAttribute="leading" constant="16" id="cR7-Q0-XTv"/>
+                            <constraint firstItem="2Zh-Kb-b8p" firstAttribute="trailing" secondItem="S5s-92-3Qj" secondAttribute="trailing" constant="16" id="kyz-Ke-1Gh"/>
+                            <constraint firstItem="OD0-Hp-a0O" firstAttribute="leading" secondItem="2Zh-Kb-b8p" secondAttribute="leading" constant="16" id="qf5-9I-PuZ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="2Zh-Kb-b8p"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gNJ-oi-YYZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1762" y="-279"/>
+        </scene>
+    </scenes>
+</document>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "SupplementaryView.toTableView():SupplementaryView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SupplementaryView.toFollowers():SupplementaryView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "FeedCell.delegate.getter:FeedCell.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SupplementaryView.userId.getter:SupplementaryView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "FeedCell.toProfile():FeedCell.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SupplementaryView.delegate.getter:SupplementaryView.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
