@@ -14,7 +14,26 @@ class APIHandler {
     static var server = "http://localhost:8080"
     var delegate: UIViewController?
     
-    
+    /// Authorizes user on a server.
+    ///
+    /// - Note:
+    /// There is an example of usage:
+    ///
+    /// ```
+    /// let apiHandler = APIHandler()
+    /// apiHandler.signin(username: "user", password: "qwerty", completionHandler: {
+    ///     // Some code to execute
+    /// })
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - username: User's username in `String`.
+    ///   - password: User's password in `String`.
+    ///   - completionHandler: Optional block of code that will be executed after you get the response from the server.
+    /// - Returns: This function doesn't return anything.
+    ///
+    /// 
+    ///
     func signin(username: String, password: String, completionHandler: (() -> Void)? ) {
         var request = URLRequest(url: URL(string: APIHandler.server + "/signin")!)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -33,12 +52,12 @@ class APIHandler {
                 if httpResponse.statusCode != 200 {
                     print(httpResponse.statusCode)
                     print(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))
-                    self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK", activity: false)
+                    self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
                     return
                 }
                 
                 guard let data = data else {
-                    self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK", activity: false)
+                    self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
                     return
                 }
                 
@@ -80,7 +99,7 @@ class APIHandler {
                     if httpResponse.statusCode != 200 {
                         print(httpResponse.statusCode)
                         print(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))
-                        self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK", activity: false)
+                        self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
                         return
                     }
                 }

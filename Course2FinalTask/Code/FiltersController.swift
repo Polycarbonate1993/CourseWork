@@ -103,7 +103,6 @@ extension FiltersController: UICollectionViewDelegate, UICollectionViewDelegateF
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.tabBarController?.runActivityIndicatorSafe()
         let text = (collectionView.cellForItem(at: indexPath) as! FilterCell).filterName.text!
         DispatchQueue.global(qos: .utility).async {
             let inputImage = CIImage(image: self.photo!)
@@ -112,7 +111,6 @@ extension FiltersController: UICollectionViewDelegate, UICollectionViewDelegateF
             let cgImage = self.context.createCGImage(result, from: result.extent)
             let uiImage = UIImage(cgImage: cgImage!)
             DispatchQueue.main.async {
-                self.tabBarController?.stopActivityindicatorSafe()
                 self.photoImage.image = uiImage
             }
             

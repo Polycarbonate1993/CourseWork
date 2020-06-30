@@ -11,8 +11,6 @@ import Kingfisher
 
 class UsersTableViewCell: UITableViewCell {
 
-//    @IBOutlet weak var avatar: UIImageView!
-//    @IBOutlet weak var fullName: UILabel!
     var userId: String!
     override var safeAreaInsets: UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 1, right: 0)
@@ -33,12 +31,4 @@ class UsersTableViewCell: UITableViewCell {
         textLabel?.font = UIFont.systemFont(ofSize: 17)
         textLabel?.textColor = .black
     }
-//    
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
 }

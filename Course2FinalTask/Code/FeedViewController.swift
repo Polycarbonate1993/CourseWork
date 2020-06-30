@@ -119,7 +119,6 @@ extension FeedViewController: FeedCellDelegate {
                 newVC.navigationItem.title = "Likes"
                 newVC.data = likingUsers
                 let backButtonTitle = self.navigationItem.title
-                self.tabBarController?.stopActivityindicatorSafe()
                 self.navigationController?.pushViewController(newVC, animated: true)
 
                 self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
