@@ -13,7 +13,6 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
     }
-    
 }
 
 extension TabBarController: UITabBarControllerDelegate {

@@ -10,23 +10,8 @@ import UIKit
 
 class NavigationController: UINavigationController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    // MARK: - Changing default behavior
+    
     override func popViewController(animated: Bool) -> UIViewController? {
         let popped = super.popViewController(animated: animated)
         navigationController(self, didShow: self.visibleViewController! , animated: animated)
@@ -40,6 +25,8 @@ class NavigationController: UINavigationController {
     }
 
 }
+
+    // MARK: - UINavigationControllerDelegate
 
 extension NavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
@@ -55,7 +42,6 @@ extension NavigationController: UINavigationControllerDelegate {
                 }
                 (viewController as! ProfileViewController).user = currentUser
             })
-            
         } else if viewController is FeedViewController {
             (viewController as! FeedViewController).getFeed()
         }

@@ -13,8 +13,6 @@ class NewPostController: UIViewController {
     @IBOutlet weak var photoCollection: UICollectionView!
     var photos:[UIImage] = []
 
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
         for i in 0...7 {
@@ -28,6 +26,8 @@ class NewPostController: UIViewController {
     }
 }
 
+    // MARK: - UICollectionViewDataSource
+
 extension NewPostController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return photos.count
@@ -38,17 +38,15 @@ extension NewPostController: UICollectionViewDataSource {
         cell.photo.image = photos[indexPath.item]
         return cell
     }
-
-
 }
+
+    // MARK: - UICollectionViewDelegateFlowLayout
 
 extension NewPostController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width / 3
-
         return CGSize(width: width, height: width)
     }
-
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
@@ -63,14 +61,8 @@ extension NewPostController: UICollectionViewDelegate, UICollectionViewDelegateF
         let newVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Filters") as! FiltersController
         newVC.photo = cell?.photo.image
         newVC.thumbnail = cell?.photo.image
-
         let backButtonTitle = self.navigationItem.title
-
         self.navigationController?.pushViewController(newVC, animated: true)
-
-
-
-
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
         self.navigationItem.backBarButtonItem?.tintColor = .systemBlue

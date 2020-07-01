@@ -11,6 +11,7 @@ import UIKit
 
 class LoginViewController: UIViewController {
 
+    // MARK: - Outlets and properties
     @IBOutlet weak var loginField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var signInButton: UIButton!
@@ -21,11 +22,11 @@ class LoginViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(textLoginDidChange(notification:)), name: UITextField.textDidChangeNotification, object: loginField)
         NotificationCenter.default.addObserver(self, selector: #selector(textPasswordDidChange(notification:)), name: UITextField.textDidChangeNotification, object: passwordField)
         self.hideKeyboardWhenTappedAround()
+        loginField.delegate = self
+        passwordField.delegate = self
         apiHandler.delegate = self
         signInButton.alpha = 0.3
         signInButton.isEnabled = false
-
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func signInPressed(_ sender: Any) {
@@ -40,6 +41,7 @@ class LoginViewController: UIViewController {
             }
         })
     }
+    // MARK: - Observing text fields changes
     
     @objc func textLoginDidChange(notification: Notification) {
         guard let textField = notification.object as? UITextField else {
@@ -59,6 +61,7 @@ class LoginViewController: UIViewController {
             signInButton.isEnabled = false
         }
     }
+    
     @objc func textPasswordDidChange(notification: Notification) {
         guard let textField = notification.object as? UITextField else {
             print("not textField")
@@ -77,15 +80,26 @@ class LoginViewController: UIViewController {
             signInButton.isEnabled = false
         }
     }
-    
-    /*
-    // MARK: - Navigation
+}
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    // MARK: - UITextFieldDelegate
+
+extension LoginViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if loginField.text != "" && passwordField.text != "" {
+            apiHandler.signin(username: loginField.text ?? "", password: passwordField.text ?? "", completionHandler: {
+                if APIHandler.token != nil {
+                    print(APIHandler.token ?? "")
+                    DispatchQueue.main.async {
+                        let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                        NotificationCenter.default.removeObserver(self)
+                        UIApplication.shared.delegate?.window??.rootViewController = newVC
+                    }
+                }
+            })
+            return true
+        } else {
+            return false
+        }
     }
-    */
-
 }

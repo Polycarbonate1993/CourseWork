@@ -11,14 +11,12 @@ import Kingfisher
 
 class ProfileViewController: UIViewController, UICollectionViewDataSource {
 
+    // MARK: - Outlets and properties
+    
     @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
-
-
     @IBOutlet weak var profile: UICollectionView!
     @IBOutlet weak var usernameTitle: UINavigationItem!
-    
     let apiHandler = APIHandler()
-    
     var user: User? {
         didSet {
             apiHandler.get(.userPosts, withID: user?.id, completionHandler: {userPosts in
@@ -34,11 +32,10 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         }
     }
     var userPosts:[Post] = []
-
     var indexForRow: IndexPath?
 
-
-
+    // MARK: - View configuration
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         apiHandler.delegate = self
@@ -53,16 +50,11 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         }
         profile.dataSource = self
         profile.delegate = self
-
         profile.register(UINib(nibName: "ProfileCell", bundle: nil), forCellWithReuseIdentifier: "ProfileSample")
         profile.register(UINib(nibName: "SupplementaryView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SupplementarySample")
-        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.logOut))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
         self.navigationItem.rightBarButtonItem?.tintColor = .systemBlue
-
-
-        // Do any additional setup after loading the view.
     }
     
     @objc func logOut() {
@@ -75,10 +67,9 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         })
     }
 
-    
+    // MARK: - UICollectionViewDataSource
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return dataProvider.postsDataProvider.findPosts(by: user.id)?.count ?? 0
         return userPosts.count
     }
 
@@ -93,7 +84,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
         let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SupplementarySample", for: indexPath) as! SupplementaryView
         reusableView.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: user!.avatar)!, cacheKey: user!.avatar))
         reusableView.fullName.text = user!.fullName
@@ -113,28 +103,17 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
             reusableView.followButton.isHidden = false
             return reusableView
         }
-//        return UICollectionReusableView()
-
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 }
 
 extension ProfileViewController: UICollectionViewDelegate {}
 
+    // MARK: - UICollectionViewDelegateFlowLayout
+
 extension ProfileViewController: UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width / 3
-
         return CGSize(width: width, height: width)
     }
 
@@ -151,7 +130,10 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+    // MARK: - HeaderDelegate
+
 extension ProfileViewController: HeaderDelegate {
+    
     func toTable(userId: String, title: String) {
         let newVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TableController") as! UsersTableViewController
         switch title {
@@ -172,7 +154,6 @@ extension ProfileViewController: HeaderDelegate {
                     self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
                     self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
                 }
-                
             })
             
         case "Following":
@@ -187,7 +168,6 @@ extension ProfileViewController: HeaderDelegate {
                     newVC.hostUser = userId
                     let backButtonTitle = self.navigationItem.title
                     self.navigationController?.pushViewController(newVC, animated: true)
-
                     self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
                     self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
                     self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
@@ -199,15 +179,9 @@ extension ProfileViewController: HeaderDelegate {
             newVC.data = []
             let backButtonTitle = self.navigationItem.title
             self.navigationController?.pushViewController(newVC, animated: true)
-
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
             self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
             self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
         }
-
-
     }
-
-
-
 }

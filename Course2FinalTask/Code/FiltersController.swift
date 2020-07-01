@@ -10,29 +10,29 @@ import UIKit
 
 class FiltersController: UIViewController {
     
+    // MARK: - Outlets and properties
+    
     @IBOutlet weak var photoImage: UIImageView!
     @IBOutlet weak var filtersCollection: UICollectionView!
     var thumbnail: UIImage?
     var photo: UIImage?
     let context = CIContext()
-
     let filterQueue = DispatchQueue(label: "FiltersQueue", qos: .utility, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
     let filterGroup = DispatchGroup()
     var filters = ["CIHexagonalPixellate", "CILineOverlay", "CIPixellate", "CIBoxBlur", "CIPhotoEffectChrome", "CIPhotoEffectInstant", "CIPhotoEffectNoir", "CIPhotoEffectTransfer"]
     var filteredImages: [(String, UIImage)] = []
 
+    // MARK: - View configuration
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Next", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.nextAction))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
         self.navigationItem.rightBarButtonItem?.tintColor = .systemBlue
-
         photoImage.image = photo
         filtersCollection.register(UINib(nibName: "FilterCell", bundle: nil), forCellWithReuseIdentifier: "FilterCell")
         filtersCollection.delegate = self
         filtersCollection.dataSource = self
-//        getFilters()
-
     }
 
     @objc func nextAction() {
@@ -40,40 +40,13 @@ class FiltersController: UIViewController {
         newVC.image = photoImage.image
         let backButtonTitle = self.navigationItem.title
         self.navigationController?.pushViewController(newVC, animated: true)
-
-
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
         self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
     }
-
-//    func getFilters() {
-//        tabBarController?.runActivityIndicatorSafe()
-//        var namesImages: [(String, UIImage)] = []
-//        for filterName in filters {
-//            filterQueue.async(group: filterGroup) {
-//
-//                let inputImage = CIImage(image: self.thumbnail!)
-//                let filter = CIFilter(name: filterName, parameters: [kCIInputImageKey: inputImage as Any])
-//                let result = filter!.outputImage!
-//                let cgImage = self.context.createCGImage(result, from: result.extent)
-//                let uiImage = UIImage(cgImage: cgImage!)
-//                self.filterQueue.sync {
-//                    namesImages.append((filterName, uiImage))
-//                }
-//
-//            }
-//        }
-//
-//        filterGroup.notify(queue: DispatchQueue.main, execute: {
-//            self.filteredImages = namesImages
-//            self.tabBarController?.stopActivityindicatorSafe()
-//            self.filtersCollection.reloadData()
-//        })
-//    }
-
-
 }
+
+    // MARK: - UICollectionViewDataSource
 
 extension FiltersController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -86,17 +59,15 @@ extension FiltersController: UICollectionViewDataSource {
         cell.picture = thumbnail
         return cell
     }
-    
-    
 }
 
+    // MARK: - UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
+
 extension FiltersController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        
         return CGSize(width: 120, height: collectionView.frame.height)
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 8
@@ -113,7 +84,6 @@ extension FiltersController: UICollectionViewDelegate, UICollectionViewDelegateF
             DispatchQueue.main.async {
                 self.photoImage.image = uiImage
             }
-            
         }
     }
 }

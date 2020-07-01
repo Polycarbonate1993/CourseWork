@@ -19,9 +19,9 @@ class FilterCell: UICollectionViewCell {
         }
     }
     let context = CIContext()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
 
     func getFilter() {
@@ -34,9 +34,6 @@ class FilterCell: UICollectionViewCell {
             let cgImage = self.context.createCGImage(result!, from: result!.extent)
             let uiImage = UIImage(cgImage: cgImage!)
             DispatchQueue.main.async {
-//                (self.filtersCollection.cellForItem(at: indexPath) as? FilterCell)?.thumbnail.image = uiImage
-                
-                
                 self.thumbnail.image = uiImage
             }
         }

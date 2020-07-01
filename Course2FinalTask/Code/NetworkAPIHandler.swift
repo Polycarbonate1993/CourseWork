@@ -8,10 +8,25 @@
 
 import Foundation
 import UIKit
+
+/// A Class that hadndles all API methodes and transform them into easy to use Swift methods.
+///
+/// - Note:
+/// You simply create an instance of this class like this:
+///
+/// ```
+/// let apiHandler = APIHandler()
+/// ```
+///
 class APIHandler {
+    
+    /// An authorization token that application gets when authorizes on the server.
     static var token: String?
+    /// The property that stores the ID of logged user.
     static var currentUserId: String?
+    /// Host
     static var server = "http://localhost:8080"
+    /// The delegate that handles showing error alerts.
     var delegate: UIViewController?
     
     /// Authorizes user on a server.
@@ -30,24 +45,19 @@ class APIHandler {
     ///   - username: User's username in `String`.
     ///   - password: User's password in `String`.
     ///   - completionHandler: Optional block of code that will be executed after you get the response from the server.
-    /// - Returns: This function doesn't return anything.
-    ///
-    /// 
+    /// - Returns: This method doesn't return anything.
     ///
     func signin(username: String, password: String, completionHandler: (() -> Void)? ) {
         var request = URLRequest(url: URL(string: APIHandler.server + "/signin")!)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         let stringData = "{\"login\":\"\(username)\",\"password\":\"\(password)\"}"
-    
         request.httpBody = stringData.data(using: .utf8)
-        
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {
                 self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
                 return
             }
-            
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
                     print(httpResponse.statusCode)
@@ -55,12 +65,10 @@ class APIHandler {
                     self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
                     return
                 }
-                
                 guard let data = data else {
                     self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
                     return
                 }
-                
                 guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
                     self.delegate?.generateAlert(title: "Oops!", message: "Error trying to decode JSON.", buttonTitle: "OK")
                     return
@@ -78,23 +86,37 @@ class APIHandler {
                     APIHandler.currentUserId = currentUser.id
                 })
                 completionHandler?()
-                
             }
         }
         dataTask.resume()
     }
     
+    /// Signs out and invalidates token.
+    ///
+    /// - Note:
+    /// This method mustn't be called before `signin(username:password:completionHandler:)`.
+    /// There is an example of usage:
+    ///
+    /// ```
+    /// let apiHandler = APIHandler()
+    /// apiHandler.signout(completionHandler: {
+    ///     // Some code to execute
+    /// })
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - completionHandler: Optional block of code that will be executed after signing out and token invalidation.
+    /// - Returns: This method doesn't return anything.
+    ///
     func signout(completionHandler: (() -> Void)? = nil) {
         var request = URLRequest(url: URL(string: APIHandler.server + "/signout")!)
         request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
             request.httpMethod = "POST"
-            
             let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {
                     self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
                     return
                 }
-                
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode != 200 {
                         print(httpResponse.statusCode)
@@ -109,7 +131,7 @@ class APIHandler {
             dataTask.resume()
     }
     
-    enum caseSwitcher {
+    enum CaseSwitcher {
         case user
         case post
         case followers
@@ -121,12 +143,46 @@ class APIHandler {
         case like
         case unlike
         case likes
-        
     }
     
-    func get(_ scenario: caseSwitcher, withID id: String? = nil, completionHandler: ((DecodedJSONData?) -> Void)? = nil) {
+    /// Gets specified data for specified scenario.
+    ///
+    /// - Note:
+    /// That is the main method in `APIHandler` class. You use it when you need to create URL query to the server and get data from it.
+    /// Fro example you want to get user with specified ID from the server:
+    ///
+    /// ```
+    /// let apiHandler = APIHandler()
+    /// apiHandler.get(.user, withID: "2", completionHandler: {user in
+    ///     guard let newUser = user as? User else {
+    ///         // Some code to execute
+    ///         return
+    ///     }
+    ///     // Some code to execute
+    /// })
+    /// ```
+    ///
+    /// Or if you need to get the current user you can do it simply as:
+    ///
+    /// ```
+    /// let apiHandler = APIHandler()
+    /// apiHandler.get(.user, completionHandler: {user in
+    ///     guard let newUser = user as? User else {
+    ///         // Some code to execute
+    ///         return
+    ///     }
+    ///     // Some code to execute
+    /// })
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - scenario: An instance of `APIHandler.CaseSwitcher` enum. You use this parameter to determine wich result you want to get.
+    ///   - id: ID of a user or a post. It depends on the scenario you choose.
+    ///   - completionHandler: Optional block of code that will be executed after this method receives a response from the server.
+    /// - Returns: This method returns data from the server into `completionHandler`.
+    ///
+    func get(_ scenario: CaseSwitcher, withID id: String? = nil, completionHandler: ((DecodedJSONData?) -> Void)? = nil) {
         var request: URLRequest
-        
         switch scenario {
         case .user:
             if id == nil {
@@ -143,7 +199,6 @@ class APIHandler {
                 } else {
                     request = URLRequest(url: URL(string: APIHandler.server + "/users/me/following")!)
                 }
-                
             } else {
                 if scenario == .followers {
                     request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/followers")!)
@@ -181,10 +236,7 @@ class APIHandler {
             request.httpBody = bodyString.data(using: .utf8)
         case .likes:
             request = URLRequest(url: URL(string: APIHandler.server + "/posts/\(id ?? "")/likes")!)
-            
-            
         }
-        
         request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
         let dataTask = URLSession.shared.dataTask(with: request) {data, response, error in
             guard error == nil else {
@@ -219,14 +271,34 @@ class APIHandler {
         dataTask.resume()
     }
     
+    /// This method creates a post from given image and description.
+    ///
+    /// You use this method when you want to create a post and upload it to the server.
+    ///
+    /// - Note:
+    /// You can use this method only with non-empty `UIImage` or you will get an error.
+    /// Fro example:
+    ///
+    /// ```
+    /// let apiHandler = APIHandler()
+    /// let somePicture = UIImage(named: "item1")!
+    /// let description = "What a cute doggo!!!"
+    /// apiHandler.createPost(image: somePicture, description: description, completionHandler: {
+    ///     // Some code to execute
+    /// })
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - image: Image that you want to be posted on the server.
+    ///   - description: An optional comment to your post.
+    ///   - completionHandler: An optional block of code that will be executed after the server responses.
+    /// - Returns: This method doesn't return anything.
+    ///
     func createPost(image: UIImage, description: String?, completionHandler: (() -> Void)? = nil) {
         let jpegData = image.jpegData(compressionQuality: 1)
         let stringJpeg = jpegData?.base64EncodedString()
         let requestString = "{\"image\":\"\(stringJpeg ?? "")\",\"description\":\"\(description ?? "")\"}"
-//        print(requestString)
         let body = requestString.data(using: .utf8)
-//        let afterBody = String(data: body!, encoding: .utf8)
-//        print(afterBody!)
         var request = URLRequest(url: URL(string: APIHandler.server + "/posts/create")!)
         request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -247,7 +319,6 @@ class APIHandler {
                 self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
                 return
             }
-            
             completionHandler?()
         }
         dataTask.resume()

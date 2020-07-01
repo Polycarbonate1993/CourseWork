@@ -30,6 +30,7 @@ class Post: Codable, DecodedJSONData {
     var authorUsername: String!
     var currentUserLikesThisPost: Bool!
     
+    /**Convertes date format from JSON date format to suitable.*/
     func dateFormattingFromJSON() -> String {
         let dateFrom = DateFormatter()
         let dateTo = DateFormatter()

@@ -11,6 +11,8 @@ import Kingfisher
 
 class FeedCell: UICollectionViewCell {
 
+    // MARK: - Outlets and properties
+    
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var date: UILabel!
@@ -23,35 +25,27 @@ class FeedCell: UICollectionViewCell {
     var post: Post?
     weak var delegate: FeedCellDelegate?
     
-    
+    // MARK: - View configuration
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
         setUpView()
-        
-        // Initialization code
     }
-    
     
     fileprivate func setUpView() {
         bigLike.isHidden = true
-        
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(doubleTap))
         gestureRecognizer.numberOfTapsRequired = 2
         mainImage.addGestureRecognizer(gestureRecognizer)
-        
         descriptionLabel.sizeToFit()
-        
         avatar.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
-        
         username.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
-        
         likes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toLikes)))
     }
 
+    // MARK: - Action handling
+    
     @objc func doubleTap() {
-        
         (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
             guard let newPost = likedPost as? Post else {
                 return
@@ -75,9 +69,6 @@ class FeedCell: UICollectionViewCell {
                 })
             }
         })
-        
-        
-        
     }
     
     @objc func toProfile() {
@@ -90,7 +81,6 @@ class FeedCell: UICollectionViewCell {
     
     @IBAction func tappedLikeButton(_ sender: Any) {
         if likeButton.tintColor == .lightGray {
-            
             (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
                 guard let newPost = likedPost as? Post else {
                     return
@@ -101,9 +91,7 @@ class FeedCell: UICollectionViewCell {
                     self.likes.text = "Likes: \(self.post!.likedByCount!)"
                 }
             })
-
         } else {
-            
             (delegate as? FeedViewController)?.apiHandler.get(.unlike, withID: post?.id, completionHandler: {unlikedPost in
                 guard let newPost = unlikedPost as? Post else {
                     return
@@ -114,12 +102,11 @@ class FeedCell: UICollectionViewCell {
                     self.likes.text = "Likes: \(self.post!.likedByCount!)"
                 }
             })
-
         }
-
     }
-    
 }
+
+    // MARK: - FeedCellDelegate declaration
 
 protocol FeedCellDelegate: class {
     func toAuthorProfile(withID id: String) -> Void

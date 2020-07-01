@@ -11,10 +11,14 @@ import Kingfisher
 
 class FeedViewController: UIViewController, UICollectionViewDataSource {
     
+    // MARK: - Outlets and properties
+    
     @IBOutlet weak var feed: UICollectionView!
     @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
     let apiHandler = APIHandler()
     var feedData: [Post]?
+    
+    // MARK: - View configuration
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,10 +28,7 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         }
         feed.dataSource = self
         feed.delegate = self
-
         feed.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
-        // Do any additional setup after loading the view.
-        
     }
     
     func getFeed() {
@@ -42,6 +43,8 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
             }
         })
     }
+    
+    // MARK: - UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return feedData?.count ?? 0
@@ -61,31 +64,28 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: post.image)!, cacheKey: post.image))
         cell.delegate = self
         return cell
-        
     }
     
     
 }
-extension FeedViewController: UICollectionViewDelegate {
-    
-}
+
+extension FeedViewController: UICollectionViewDelegate {}
+
+    // MARK: - UICollectionViewDelegateFlowLayout
 
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
         var height: CGFloat = 8 + 35 + 8 + 44 + 55
-
         height += feed.frame.width
-        
-
         return CGSize(width: feed.frame.width, height: height)
     }
 }
 
+    // MARK: - FeedCellDelegate
+
 extension FeedViewController: FeedCellDelegate {
 
     func toAuthorProfile(withID id: String) {
-        
         if id == APIHandler.currentUserId {
             self.performSegue(withIdentifier: "unwindToProfile", sender: self)
         } else {
@@ -104,8 +104,6 @@ extension FeedViewController: FeedCellDelegate {
                 }
             })
         }
-        
-        
     }
 
     func toLikes(ofPostID id: String) {
@@ -120,14 +118,12 @@ extension FeedViewController: FeedCellDelegate {
                 newVC.data = likingUsers
                 let backButtonTitle = self.navigationItem.title
                 self.navigationController?.pushViewController(newVC, animated: true)
-
                 self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
                 self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
                 self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
             }
         })
     }
-
 }
     
    

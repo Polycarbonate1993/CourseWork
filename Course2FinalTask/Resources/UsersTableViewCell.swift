@@ -12,14 +12,13 @@ import Kingfisher
 class UsersTableViewCell: UITableViewCell {
 
     var userId: String!
+    
     override var safeAreaInsets: UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 1, right: 0)
     }
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
-            
         imageView?.translatesAutoresizingMaskIntoConstraints = false
         imageView?.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
         imageView?.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true

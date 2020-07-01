@@ -11,11 +11,8 @@ import UIKit
 class ProfileCell: UICollectionViewCell {
 
     @IBOutlet weak var mainImage: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-       
-        
     }
-
 }
