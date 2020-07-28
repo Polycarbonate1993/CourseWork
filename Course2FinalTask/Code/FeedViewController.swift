@@ -8,6 +8,7 @@
 
 import UIKit
 import Kingfisher
+import CoreData
 
 class FeedViewController: UIViewController, UICollectionViewDataSource {
     
@@ -16,14 +17,15 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     @IBOutlet weak var feed: UICollectionView!
     @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
     let apiHandler = APIHandler()
-    var feedData: [Post]?
+    var feedData: [Post] = []
+    
     
     // MARK: - View configuration
     
     override func viewDidLoad() {
         super.viewDidLoad()
         apiHandler.delegate = self
-        if feedData == nil {
+        if feedData.isEmpty {
             getFeed()
         }
         feed.dataSource = self
@@ -37,25 +39,36 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
                 return
             }
             self.feedData = data
+            self.saveFeedToDataBase()
             DispatchQueue.main.async {
-                
                 self.feed.reloadData()
             }
         })
     }
     
+    private func saveFeedToDataBase() {
+        var newArray = [CoreDataPost]()
+        let context = (tabBarController as! TabBarController).dataManager.getContext()
+        for _ in feedData {
+            newArray.append((tabBarController as! TabBarController).dataManager.createObject(from: CoreDataPost.self))
+        }
+        feedData.convertFromJSON(to: newArray)
+        newArray.forEach({$0.inFeed = true})
+        (tabBarController as! TabBarController).dataManager.save(context: context)
+    }
+    
     // MARK: - UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return feedData?.count ?? 0
+        return feedData.count
     }
     
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedSample", for: indexPath) as! FeedCell
-        let post = feedData![indexPath.item]
-        cell.post = feedData?[indexPath.item]
+        let post = feedData[indexPath.item]
+        cell.post = feedData[indexPath.item]
         cell.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: post.authorAvatar)!, cacheKey: post.authorAvatar))
         cell.date.text = post.dateFormattingFromJSON()
         cell.descriptionLabel.text = post.description

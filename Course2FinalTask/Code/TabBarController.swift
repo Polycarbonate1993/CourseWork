@@ -9,6 +9,7 @@
 import UIKit
 
 class TabBarController: UITabBarController {
+    var dataManager: CoreDataManager!
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self

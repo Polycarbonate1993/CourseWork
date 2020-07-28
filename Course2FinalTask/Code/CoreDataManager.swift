@@ -28,7 +28,9 @@ final class CoreDataManager {
     }()
     
     func getContext() -> NSManagedObjectContext {
-        return container.viewContext
+        let context = container.viewContext
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        return context
     }
     
     func save(context: NSManagedObjectContext) {

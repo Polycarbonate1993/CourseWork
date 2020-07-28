@@ -44,6 +44,7 @@ class LoginViewController: UIViewController {
                 DispatchQueue.main.async {
                     let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                     NotificationCenter.default.removeObserver(self)
+                    newVC.dataManager = CoreDataManager(modelName: "Model")
                     UIApplication.shared.delegate?.window??.rootViewController = newVC
                 }
             }
@@ -71,6 +72,7 @@ class LoginViewController: UIViewController {
                     DispatchQueue.main.async {
                         let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                         NotificationCenter.default.removeObserver(self)
+                        newVC.dataManager = CoreDataManager(modelName: "Model")
                         UIApplication.shared.delegate?.window??.rootViewController = newVC
                     }
                 case .invalid:
@@ -80,7 +82,13 @@ class LoginViewController: UIViewController {
                     let deletionStatus = SecItemDelete(query as CFDictionary)
                     print("deletion status: \(SecCopyErrorMessageString(deletionStatus, nil) ?? "" as CFString)")
                 case .offlineMode:
-                    break
+                    DispatchQueue.main.async {
+                        let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                        NotificationCenter.default.removeObserver(self)
+                        newVC.dataManager = CoreDataManager(modelName: "Model")
+                        UIApplication.shared.delegate?.window??.rootViewController = newVC
+                        self.tabBarController?.generateAlert(title: "Offline Mode", message: "Functionality is limited.", buttonTitle: "OK")
+                    }
                 }
             })
         }

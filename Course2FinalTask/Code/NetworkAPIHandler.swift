@@ -28,6 +28,8 @@ class APIHandler {
     static var server = "http://localhost:8080"
     /// The delegate that handles showing error alerts.
     var delegate: UIViewController?
+    /// An offline mode indicator.
+    static var offlineMode = false
     
     /// Authorizes user on a server.
     ///
@@ -54,9 +56,18 @@ class APIHandler {
         let stringData = "{\"login\":\"\(username)\",\"password\":\"\(password)\"}"
         request.httpBody = stringData.data(using: .utf8)
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {
-                self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
+            if error != nil {
+                APIHandler.offlineMode = true
+                DispatchQueue.main.async {
+                    let newVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                    NotificationCenter.default.removeObserver(self.delegate as Any)
+                    newVC.dataManager = CoreDataManager(modelName: "Model")
+                    UIApplication.shared.delegate?.window??.rootViewController = newVC
+                    self.delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited.", buttonTitle: "OK")
+                }
                 return
+            } else {
+                APIHandler.offlineMode = false
             }
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
@@ -336,17 +347,21 @@ class APIHandler {
         request.addValue(token ?? "", forHTTPHeaderField: "token")
         request.httpMethod = "GET"
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {
+            if error != nil {
+                APIHandler.offlineMode = true
                 completionHandler?(.offlineMode)
                 return
             }
             if let httpResponse = response as? HTTPURLResponse {
                 switch httpResponse.statusCode {
                 case 200:
+                    APIHandler.offlineMode = false
                     completionHandler?(.valid)
                 case 401:
+                    APIHandler.offlineMode = false
                     completionHandler?(.invalid)
                 default:
+                    APIHandler.offlineMode = true
                     completionHandler?(.offlineMode)
                 }
             }
