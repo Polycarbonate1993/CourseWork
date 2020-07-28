@@ -27,12 +27,20 @@ class LoginViewController: UIViewController {
         apiHandler.delegate = self
         signInButton.alpha = 0.3
         signInButton.isEnabled = false
+        setUpState()
     }
     
     @IBAction func signInPressed(_ sender: Any) {
         apiHandler.signin(username: loginField.text ?? "", password: passwordField.text ?? "", completionHandler: {
             if APIHandler.token != nil {
                 print(APIHandler.token ?? "")
+                let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+                                            kSecAttrDescription as String: "Auithorization token" as Any,
+                                            kSecValueData as String: APIHandler.token?.data(using: .utf8) as Any
+                ]
+                let status = SecItemAdd(query as CFDictionary, nil)
+                print("addong status: \(status)")
                 DispatchQueue.main.async {
                     let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                     NotificationCenter.default.removeObserver(self)
@@ -41,6 +49,43 @@ class LoginViewController: UIViewController {
             }
         })
     }
+    
+    private func setUpState() {
+        var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrDescription as String: "Auithorization token" as Any,
+                                    kSecReturnAttributes as String: true,
+                                    kSecMatchLimit as String: kSecMatchLimitOne,
+                                    kSecReturnData as String: true
+        ]
+        var queryResult: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer(&queryResult))
+        print("keychain status: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)")
+        if status == errSecSuccess {
+            guard let item = queryResult as? [String: Any], let tokenData = item[kSecValueData as String] as? Data, let token = String(data: tokenData, encoding: .utf8) else {
+                return
+            }
+            apiHandler.checkToken(token, completionHandler: {tokenCheck in
+                switch tokenCheck {
+                case .valid:
+                    APIHandler.token = token
+                    DispatchQueue.main.async {
+                        let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                        NotificationCenter.default.removeObserver(self)
+                        UIApplication.shared.delegate?.window??.rootViewController = newVC
+                    }
+                case .invalid:
+                    query = [kSecClass as String: kSecClassGenericPassword,
+                             kSecAttrDescription as String: "Auithorization token" as Any,
+                    ]
+                    let deletionStatus = SecItemDelete(query as CFDictionary)
+                    print("deletion status: \(SecCopyErrorMessageString(deletionStatus, nil) ?? "" as CFString)")
+                case .offlineMode:
+                    break
+                }
+            })
+        }
+    }
+    
     // MARK: - Observing text fields changes
     
     @objc func textLoginDidChange(notification: Notification) {

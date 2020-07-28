@@ -36,6 +36,8 @@
 		AFB16EB7247C645D00C22EC2 /* FiltersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EB6247C645D00C22EC2 /* FiltersController.swift */; };
 		AFB16EBA247C655600C22EC2 /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EB8247C655600C22EC2 /* FilterCell.swift */; };
 		AFB16EBB247C655600C22EC2 /* FilterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB16EB9247C655600C22EC2 /* FilterCell.xib */; };
+		AFD59FD224CF8B7F0042F3BF /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD59FD124CF8B7F0042F3BF /* CoreDataManager.swift */; };
+		AFD59FD524CF8E870042F3BF /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AFD59FD324CF8E870042F3BF /* Model.xcdatamodeld */; };
 		AFDF380E247ECF2600822D1B /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDF380D247ECF2600822D1B /* ShareController.swift */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +86,8 @@
 		AFB16EB6247C645D00C22EC2 /* FiltersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersController.swift; sourceTree = "<group>"; };
 		AFB16EB8247C655600C22EC2 /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		AFB16EB9247C655600C22EC2 /* FilterCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FilterCell.xib; sourceTree = "<group>"; };
+		AFD59FD124CF8B7F0042F3BF /* CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		AFD59FD424CF8E870042F3BF /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		AFDF380D247ECF2600822D1B /* ShareController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -142,6 +146,7 @@
 				AFDF380D247ECF2600822D1B /* ShareController.swift */,
 				AF1295F524A5FFEC002FD7CF /* NetworkAPIHandler.swift */,
 				AF1295F724A603A1002FD7CF /* Model.swift */,
+				AFD59FD124CF8B7F0042F3BF /* CoreDataManager.swift */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -164,6 +169,7 @@
 				AFB16EB3247C570F00C22EC2 /* NewPostCell.xib */,
 				AFB16EB8247C655600C22EC2 /* FilterCell.swift */,
 				AFB16EB9247C655600C22EC2 /* FilterCell.xib */,
+				AFD59FD324CF8E870042F3BF /* Model.xcdatamodeld */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -289,9 +295,11 @@
 				AF7DD29624504172009FD0F4 /* UsersTableViewCell.swift in Sources */,
 				AF816BF6244DB08B00663017 /* FeedViewController.swift in Sources */,
 				AFB16EB7247C645D00C22EC2 /* FiltersController.swift in Sources */,
+				AFD59FD224CF8B7F0042F3BF /* CoreDataManager.swift in Sources */,
 				AFDF380E247ECF2600822D1B /* ShareController.swift in Sources */,
 				74B79258202B3254006BCB41 /* AppDelegate.swift in Sources */,
 				AFB16EAF247BEDD400C22EC2 /* TabBarController.swift in Sources */,
+				AFD59FD524CF8E870042F3BF /* Model.xcdatamodeld in Sources */,
 				AFB16EB4247C570F00C22EC2 /* NewPostCell.swift in Sources */,
 				AF87111B244E9E1500F20B53 /* SupplementaryView.swift in Sources */,
 				AFB16EBA247C655600C22EC2 /* FilterCell.swift in Sources */,
@@ -503,6 +511,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		AFD59FD324CF8E870042F3BF /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				AFD59FD424CF8E870042F3BF /* Model.xcdatamodel */,
+			);
+			currentVersion = AFD59FD424CF8E870042F3BF /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 74B7924C202B3254006BCB41 /* Project object */;
 }

@@ -111,24 +111,24 @@ class APIHandler {
     func signout(completionHandler: (() -> Void)? = nil) {
         var request = URLRequest(url: URL(string: APIHandler.server + "/signout")!)
         request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
-            request.httpMethod = "POST"
-            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-                guard error == nil else {
-                    self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
+        request.httpMethod = "POST"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
+                    return
+            }
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode != 200 {
+                    print(httpResponse.statusCode)
+                    print(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))
+                    self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
                     return
                 }
-                if let httpResponse = response as? HTTPURLResponse {
-                    if httpResponse.statusCode != 200 {
-                        print(httpResponse.statusCode)
-                        print(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))
-                        self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
-                        return
-                    }
-                }
-                APIHandler.token = nil
-                completionHandler?()
             }
-            dataTask.resume()
+            APIHandler.token = nil
+            completionHandler?()
+        }
+        dataTask.resume()
     }
     
     enum CaseSwitcher {
@@ -143,6 +143,12 @@ class APIHandler {
         case like
         case unlike
         case likes
+    }
+    
+    enum CheckTokenResult {
+        case valid
+        case invalid
+        case offlineMode
     }
     
     /// Gets specified data for specified scenario.
@@ -297,6 +303,7 @@ class APIHandler {
     func createPost(image: UIImage, description: String?, completionHandler: (() -> Void)? = nil) {
         let jpegData = image.jpegData(compressionQuality: 1)
         let stringJpeg = jpegData?.base64EncodedString()
+        print(stringJpeg)
         let requestString = "{\"image\":\"\(stringJpeg ?? "")\",\"description\":\"\(description ?? "")\"}"
         let body = requestString.data(using: .utf8)
         var request = URLRequest(url: URL(string: APIHandler.server + "/posts/create")!)
@@ -320,6 +327,29 @@ class APIHandler {
                 return
             }
             completionHandler?()
+        }
+        dataTask.resume()
+    }
+    
+    func checkToken(_ token: String?, completionHandler: ((CheckTokenResult) -> Void)? = nil){
+        var request = URLRequest(url: URL(string: APIHandler.server + "/checkToken")!)
+        request.addValue(token ?? "", forHTTPHeaderField: "token")
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                completionHandler?(.offlineMode)
+                return
+            }
+            if let httpResponse = response as? HTTPURLResponse {
+                switch httpResponse.statusCode {
+                case 200:
+                    completionHandler?(.valid)
+                case 401:
+                    completionHandler?(.invalid)
+                default:
+                    completionHandler?(.offlineMode)
+                }
+            }
         }
         dataTask.resume()
     }
