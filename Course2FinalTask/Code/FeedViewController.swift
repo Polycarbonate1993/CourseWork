@@ -28,6 +28,7 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         if feedData.isEmpty {
             getFeed()
         }
+        
         feed.dataSource = self
         feed.delegate = self
         feed.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
@@ -39,7 +40,10 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
                 return
             }
             self.feedData = data
-            self.saveFeedToDataBase()
+            if APIHandler.offlineMode == false {
+                self.saveFeedToDataBase()
+            }
+            print(self.feedData.count)
             DispatchQueue.main.async {
                 self.feed.reloadData()
             }
@@ -47,13 +51,14 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     }
     
     private func saveFeedToDataBase() {
-        var newArray = [CoreDataPost]()
-        let context = (tabBarController as! TabBarController).dataManager.getContext()
-        for _ in feedData {
-            newArray.append((tabBarController as! TabBarController).dataManager.createObject(from: CoreDataPost.self))
+        var fetchedPosts = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "inFeed == TRUE")]))
+        if !fetchedPosts.isEmpty {
+            for post in fetchedPosts {
+                (self.tabBarController as! TabBarController).dataManager.delete(object: post)
+            }
         }
-        feedData.convertFromJSON(to: newArray)
-        newArray.forEach({$0.inFeed = true})
+        let context = (tabBarController as! TabBarController).dataManager.getContext()
+        let newArray: [CoreDataPost] = feedData.exportToCoreDataFromDecodedJSONData(withMarker: true, CoreDataPost.self)
         (tabBarController as! TabBarController).dataManager.save(context: context)
     }
     
@@ -69,12 +74,18 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedSample", for: indexPath) as! FeedCell
         let post = feedData[indexPath.item]
         cell.post = feedData[indexPath.item]
-        cell.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: post.authorAvatar)!, cacheKey: post.authorAvatar))
+        
         cell.date.text = post.dateFormattingFromJSON()
         cell.descriptionLabel.text = post.description
         cell.likes.text = "Likes: \(post.likedByCount!)"
         cell.username.text = post.authorUsername
-        cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: post.image)!, cacheKey: post.image))
+        if APIHandler.offlineMode {
+            cell.mainImage.image = UIImage(data: Data(base64Encoded: post.image)!)
+            cell.avatar.image = UIImage(data: Data(base64Encoded: post.authorAvatar)!)
+        } else {
+            cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: post.image)!, cacheKey: post.image))
+            cell.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: post.authorAvatar)!, cacheKey: post.authorAvatar))
+        }
         cell.delegate = self
         return cell
     }

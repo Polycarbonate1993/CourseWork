@@ -29,7 +29,7 @@ final class CoreDataManager {
     
     func getContext() -> NSManagedObjectContext {
         let context = container.viewContext
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        context.mergePolicy = NSMergePolicy.init(merge: .overwriteMergePolicyType)
         return context
     }
     
@@ -62,6 +62,10 @@ final class CoreDataManager {
         var fetchedResult = [T]()
         request = entity.fetchRequest() as! NSFetchRequest<T>
         request.predicate = predicate
+        if T() is CoreDataPost {
+            let sortDescriptor = NSSortDescriptor(key: "createdTime", ascending: false)
+            request.sortDescriptors = [sortDescriptor]
+        }
         do {
             fetchedResult = try context.fetch(request)
         } catch {

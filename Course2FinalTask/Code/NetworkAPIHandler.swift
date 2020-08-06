@@ -95,8 +95,8 @@ class APIHandler {
                         return
                     }
                     APIHandler.currentUserId = currentUser.id
+                    completionHandler?()
                 })
-                completionHandler?()
             }
         }
         dataTask.resume()
@@ -125,9 +125,11 @@ class APIHandler {
         request.httpMethod = "POST"
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {
-                self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
+                APIHandler.offlineMode = true
+                self.delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
                     return
             }
+            APIHandler.offlineMode = false
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
                     print(httpResponse.statusCode)
@@ -199,93 +201,129 @@ class APIHandler {
     /// - Returns: This method returns data from the server into `completionHandler`.
     ///
     func get(_ scenario: CaseSwitcher, withID id: String? = nil, completionHandler: ((DecodedJSONData?) -> Void)? = nil) {
-        var request: URLRequest
-        switch scenario {
-        case .user:
-            if id == nil {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/me")!)
-            } else {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id!)")!)
-            }
-        case .post:
-            request = URLRequest(url: URL(string: APIHandler.server + "/posts/\(id ?? "")")!)
-        case .followers, .following:
-            if id == nil {
-                if scenario == .followers {
-                    request = URLRequest(url: URL(string: APIHandler.server + "/users/me/followers")!)
+        if APIHandler.offlineMode {
+            let dataManager = (delegate?.tabBarController as? TabBarController)?.dataManager
+            switch scenario {
+            case .feed:
+                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "inFeed == TRUE")])
+                let fetchedFeed = dataManager?.fetchData(for: CoreDataPost.self, predicate: predicate)
+                let newFeed = fetchedFeed?.importFromCoreDataToJSON(Post.self)
+                print("fetched feed count: \(fetchedFeed?.count ?? 0)\nnew feed count: \(newFeed?.count ?? 0)")
+                completionHandler?(newFeed)
+            case .user:
+                if id == nil {
+                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")])
+                    let fetchedUser = dataManager?.fetchData(for: CoreDataUser.self, predicate: predicate)
+                    let newUser = fetchedUser?.importFromCoreDataToJSON(User.self)
+                    completionHandler?(newUser?[0])
                 } else {
-                    request = URLRequest(url: URL(string: APIHandler.server + "/users/me/following")!)
+                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+                    break
                 }
-            } else {
-                if scenario == .followers {
-                    request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/followers")!)
+            case .userPosts:
+                if id == APIHandler.currentUserId {
+                    let fetchedPosts = dataManager?.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(id!)")]))
+                    let newPosts = fetchedPosts?.importFromCoreDataToJSON(Post.self)
+                    completionHandler?(newPosts)
                 } else {
-                    request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/following")!)
+                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+                    break
                 }
+            default:
+                delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+                break
             }
-        case .userPosts:
-            if id == nil {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/\(APIHandler.currentUserId ?? "")/posts")!)
-            } else {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/posts")!)
+        } else {
+            var request: URLRequest
+            switch scenario {
+            case .user:
+                if id == nil {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/me")!)
+                } else {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id!)")!)
+                }
+            case .post:
+                request = URLRequest(url: URL(string: APIHandler.server + "/posts/\(id ?? "")")!)
+            case .followers, .following:
+                if id == nil {
+                    if scenario == .followers {
+                        request = URLRequest(url: URL(string: APIHandler.server + "/users/me/followers")!)
+                    } else {
+                        request = URLRequest(url: URL(string: APIHandler.server + "/users/me/following")!)
+                    }
+                } else {
+                    if scenario == .followers {
+                        request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/followers")!)
+                    } else {
+                        request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/following")!)
+                    }
+                }
+            case .userPosts:
+                if id == nil {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/\(APIHandler.currentUserId ?? "")/posts")!)
+                } else {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/\(id ?? "")/posts")!)
+                }
+            case .feed:
+                request = URLRequest(url: URL(string: APIHandler.server + "/posts/feed")!)
+            case .follow, .unfollow:
+                if scenario == .follow {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/follow")!)
+                } else {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/users/unfollow")!)
+                }
+                request.httpMethod = "POST"
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                let bodyString = "{\"userID\":\"\(id ?? "")\"}"
+                request.httpBody = bodyString.data(using: .utf8)
+            case .like, .unlike:
+                if scenario == .like {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/posts/like")!)
+                } else {
+                    request = URLRequest(url: URL(string: APIHandler.server + "/posts/unlike")!)
+                }
+                request.httpMethod = "POST"
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                let bodyString = "{\"postID\":\"\(id ?? "")\"}"
+                request.httpBody = bodyString.data(using: .utf8)
+            case .likes:
+                request = URLRequest(url: URL(string: APIHandler.server + "/posts/\(id ?? "")/likes")!)
             }
-        case .feed:
-            request = URLRequest(url: URL(string: APIHandler.server + "/posts/feed")!)
-        case .follow, .unfollow:
-            if scenario == .follow {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/follow")!)
-            } else {
-                request = URLRequest(url: URL(string: APIHandler.server + "/users/unfollow")!)
-            }
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            let bodyString = "{\"userID\":\"\(id ?? "")\"}"
-            request.httpBody = bodyString.data(using: .utf8)
-        case .like, .unlike:
-            if scenario == .like {
-                request = URLRequest(url: URL(string: APIHandler.server + "/posts/like")!)
-            } else {
-                request = URLRequest(url: URL(string: APIHandler.server + "/posts/unlike")!)
-            }
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            let bodyString = "{\"postID\":\"\(id ?? "")\"}"
-            request.httpBody = bodyString.data(using: .utf8)
-        case .likes:
-            request = URLRequest(url: URL(string: APIHandler.server + "/posts/\(id ?? "")/likes")!)
-        }
-        request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
-        let dataTask = URLSession.shared.dataTask(with: request) {data, response, error in
-            guard error == nil else {
-                self.delegate?.generateAlert(title: error?.localizedDescription ?? "", message: error.debugDescription, buttonTitle: "OK")
-                return
-            }
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode != 200 {
-                    self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
+            request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
+            let dataTask = URLSession.shared.dataTask(with: request) {data, response, error in
+                guard error == nil else {
+                    APIHandler.offlineMode = true
+                    self.delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
                     return
                 }
+                APIHandler.offlineMode = false
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode != 200 {
+                        self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OK")
+                        return
+                    }
+                }
+                guard let data = data else {
+                    self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
+                    return
+                }
+                switch scenario {
+                case .user, .follow, .unfollow:
+                    let user = try? JSONDecoder().decode(User.self, from: data)
+                    completionHandler?(user)
+                case .post, .like, .unlike:
+                    let post = try? JSONDecoder().decode(Post.self, from: data)
+                    completionHandler?(post)
+                case .followers, .following, .likes:
+                    let users = try? JSONDecoder().decode([User].self, from: data)
+                    completionHandler?(users)
+                case .userPosts, .feed:
+                    let posts = try? JSONDecoder().decode([Post].self, from: data)
+                    completionHandler?(posts)
+                }
             }
-            guard let data = data else {
-                self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
-                return
-            }
-            switch scenario {
-            case .user, .follow, .unfollow:
-                let user = try? JSONDecoder().decode(User.self, from: data)
-                completionHandler?(user)
-            case .post, .like, .unlike:
-                let post = try? JSONDecoder().decode(Post.self, from: data)
-                completionHandler?(post)
-            case .followers, .following, .likes:
-                let users = try? JSONDecoder().decode([User].self, from: data)
-                completionHandler?(users)
-            case .userPosts, .feed:
-                let posts = try? JSONDecoder().decode([Post].self, from: data)
-                completionHandler?(posts)
-            }
+            dataTask.resume()
         }
-        dataTask.resume()
     }
     
     /// This method creates a post from given image and description.
@@ -311,35 +349,43 @@ class APIHandler {
     ///   - completionHandler: An optional block of code that will be executed after the server responses.
     /// - Returns: This method doesn't return anything.
     ///
-    func createPost(image: UIImage, description: String?, completionHandler: (() -> Void)? = nil) {
-        let jpegData = image.jpegData(compressionQuality: 1)
-        let stringJpeg = jpegData?.base64EncodedString()
-        print(stringJpeg)
-        let requestString = "{\"image\":\"\(stringJpeg ?? "")\",\"description\":\"\(description ?? "")\"}"
-        let body = requestString.data(using: .utf8)
-        var request = URLRequest(url: URL(string: APIHandler.server + "/posts/create")!)
-        request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = body
-        request.httpMethod = "POST"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {
-                self.delegate?.generateAlert(title: error.debugDescription, message: error?.localizedDescription ?? "", buttonTitle: "OK")
-                return
-            }
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode != 200 {
-                    self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OKs")
+    func createPost(image: UIImage, description: String?, completionHandler: ((Post?) -> Void)? = nil) {
+        if APIHandler.offlineMode {
+            
+        } else {
+            let jpegData = image.jpegData(compressionQuality: 1)
+            let stringJpeg = jpegData?.base64EncodedString()
+            print(stringJpeg)
+            let requestString = "{\"image\":\"\(stringJpeg ?? "")\",\"description\":\"\(description ?? "")\"}"
+            let body = requestString.data(using: .utf8)
+            var request = URLRequest(url: URL(string: APIHandler.server + "/posts/create")!)
+            request.addValue(APIHandler.token ?? "", forHTTPHeaderField: "token")
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = body
+            request.httpMethod = "POST"
+            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {
+                    APIHandler.offlineMode = true
+                    self.delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
                     return
                 }
+                APIHandler.offlineMode = false
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode != 200 {
+                        self.delegate?.generateAlert(title: "\(httpResponse.statusCode)", message: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode), buttonTitle: "OKs")
+                        return
+                    }
+                }
+                guard let data = data else {
+                    self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
+                    return
+                }
+                let post = try? JSONDecoder().decode(Post.self, from: data)
+                completionHandler?(post)
             }
-            guard data != nil else {
-                self.delegate?.generateAlert(title: "Oops!", message: "Something wrong with data.", buttonTitle: "OK")
-                return
-            }
-            completionHandler?()
+            dataTask.resume()
         }
-        dataTask.resume()
+        
     }
     
     func checkToken(_ token: String?, completionHandler: ((CheckTokenResult) -> Void)? = nil){

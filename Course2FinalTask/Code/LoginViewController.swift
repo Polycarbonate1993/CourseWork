@@ -34,13 +34,13 @@ class LoginViewController: UIViewController {
         apiHandler.signin(username: loginField.text ?? "", password: passwordField.text ?? "", completionHandler: {
             if APIHandler.token != nil {
                 print(APIHandler.token ?? "")
-                let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
                                             kSecAttrDescription as String: "Auithorization token" as Any,
                                             kSecValueData as String: APIHandler.token?.data(using: .utf8) as Any
                 ]
                 let status = SecItemAdd(query as CFDictionary, nil)
-                print("addong status: \(status)")
+                print("adding status: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)")
                 DispatchQueue.main.async {
                     let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                     NotificationCenter.default.removeObserver(self)
@@ -52,7 +52,7 @@ class LoginViewController: UIViewController {
     }
     
     private func setUpState() {
-        var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+        var query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                     kSecAttrDescription as String: "Auithorization token" as Any,
                                     kSecReturnAttributes as String: true,
                                     kSecMatchLimit as String: kSecMatchLimitOne,
@@ -69,14 +69,21 @@ class LoginViewController: UIViewController {
                 switch tokenCheck {
                 case .valid:
                     APIHandler.token = token
-                    DispatchQueue.main.async {
-                        let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-                        NotificationCenter.default.removeObserver(self)
-                        newVC.dataManager = CoreDataManager(modelName: "Model")
-                        UIApplication.shared.delegate?.window??.rootViewController = newVC
-                    }
+                    self.apiHandler.get(.user, completionHandler: {user in
+                        guard let currentUser = user as? User else {
+                            self.tabBarController?.generateAlert(title: "Oops!", message: "Error trying to decode JSON.", buttonTitle: "OK")
+                            return
+                        }
+                        APIHandler.currentUserId = currentUser.id
+                        DispatchQueue.main.async {
+                            let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                            NotificationCenter.default.removeObserver(self)
+                            newVC.dataManager = CoreDataManager(modelName: "Model")
+                            UIApplication.shared.delegate?.window??.rootViewController = newVC
+                        }
+                    })
                 case .invalid:
-                    query = [kSecClass as String: kSecClassGenericPassword,
+                    query = [kSecClass as String: kSecClassInternetPassword,
                              kSecAttrDescription as String: "Auithorization token" as Any,
                     ]
                     let deletionStatus = SecItemDelete(query as CFDictionary)
@@ -87,7 +94,7 @@ class LoginViewController: UIViewController {
                         NotificationCenter.default.removeObserver(self)
                         newVC.dataManager = CoreDataManager(modelName: "Model")
                         UIApplication.shared.delegate?.window??.rootViewController = newVC
-                        self.tabBarController?.generateAlert(title: "Offline Mode", message: "Functionality is limited.", buttonTitle: "OK")
+                        newVC.generateAlert(title: "Offline Mode", message: "Functionality is limited.", buttonTitle: "OK")
                     }
                 }
             })
@@ -143,9 +150,17 @@ extension LoginViewController: UITextFieldDelegate {
             apiHandler.signin(username: loginField.text ?? "", password: passwordField.text ?? "", completionHandler: {
                 if APIHandler.token != nil {
                     print(APIHandler.token ?? "")
+                    let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+                                                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+                                                kSecAttrDescription as String: "Auithorization token" as Any,
+                                                kSecValueData as String: APIHandler.token?.data(using: .utf8) as Any
+                    ]
+                    let status = SecItemAdd(query as CFDictionary, nil)
+                    print("adding status: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)")
                     DispatchQueue.main.async {
                         let newVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                         NotificationCenter.default.removeObserver(self)
+                        newVC.dataManager = CoreDataManager(modelName: "Model")
                         UIApplication.shared.delegate?.window??.rootViewController = newVC
                     }
                 }

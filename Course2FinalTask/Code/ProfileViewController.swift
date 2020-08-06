@@ -19,16 +19,39 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     let apiHandler = APIHandler()
     var user: User? {
         didSet {
-            apiHandler.get(.userPosts, withID: user?.id, completionHandler: {userPosts in
-                guard let newPosts = userPosts as? [Post] else {
-                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-                    return
-                }
-                self.userPosts = newPosts.reversed()
-                DispatchQueue.main.async {
-                    self.profile?.reloadData()
-                }
-            })
+            if user != nil {
+                apiHandler.get(.userPosts, withID: user?.id, completionHandler: {userPosts in
+                    guard let newPosts = userPosts as? [Post] else {
+                        self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
+                        return
+                    }
+                    if APIHandler.offlineMode {
+                        self.userPosts = newPosts
+                    } else {
+                        self.userPosts = newPosts.sorted(by: {lhs, rhs in
+                            if lhs.createdTime >= rhs.createdTime {
+                                return true
+                            } else {
+                                return false
+                            }
+                        })
+                    }
+                    if APIHandler.offlineMode == false {
+                        let fetchedPosts = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(APIHandler.currentUserId!)")]))
+                        let context = (self.tabBarController as! TabBarController).dataManager.getContext()
+                        if !fetchedPosts.isEmpty {
+                            for post in fetchedPosts {
+                                (self.tabBarController as! TabBarController).dataManager.delete(object: post)
+                            }
+                        }
+                        let coreDataPosts: [CoreDataPost] = self.userPosts.exportToCoreDataFromDecodedJSONData(withMarker: false, CoreDataPost.self)
+                        (self.tabBarController as! TabBarController).dataManager.save(context: context)
+                    }
+                    DispatchQueue.main.async {
+                        self.profile?.reloadData()
+                    }
+                })
+            }
         }
     }
     var userPosts:[Post] = []
@@ -45,7 +68,17 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
                     self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
                     return
                 }
+                APIHandler.currentUserId = newUser.id
                 self.user = newUser
+                if APIHandler.offlineMode == false {
+                    let fetchedUser = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataUser.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")]))
+                    if !fetchedUser.isEmpty {
+                        (self.tabBarController as! TabBarController).dataManager.delete(object: fetchedUser.first!)
+                    }
+                    let coreDataUser: [CoreDataUser] = [self.user].exportToCoreDataFromDecodedJSONData(withMarker: true, CoreDataUser.self)
+                    let context = (self.tabBarController as! TabBarController).dataManager.getContext()
+                    (self.tabBarController as! TabBarController).dataManager.save(context: context)
+                }
             })
         }
         profile.dataSource = self
@@ -59,6 +92,11 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     
     @objc func logOut() {
         apiHandler.signout(completionHandler: {
+            let query = [kSecClass as String: kSecClassGenericPassword,
+                     kSecAttrDescription as String: "Auithorization token" as Any,
+            ]
+            let deletionStatus = SecItemDelete(query as CFDictionary)
+            print("deletion status: \(SecCopyErrorMessageString(deletionStatus, nil) ?? "" as CFString)")
             DispatchQueue.main.async {
                 let newVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 UIApplication.shared.delegate?.window??.rootViewController = newVC
@@ -79,22 +117,32 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: indexPath) as! ProfileCell
-        cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[indexPath.item].image)!, cacheKey: userPosts[indexPath.item].image))
+        if APIHandler.offlineMode {
+            cell.mainImage.image = UIImage(data: Data(base64Encoded: userPosts[indexPath.item].image)!)
+        } else {
+            cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[indexPath.item].image)!, cacheKey: userPosts[indexPath.item].image))
+        }
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SupplementarySample", for: indexPath) as! SupplementaryView
-        reusableView.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: user!.avatar)!, cacheKey: user!.avatar))
-        reusableView.fullName.text = user!.fullName
-        reusableView.followers.text = "Followers: \(user!.followedByCount!)"
-        reusableView.following.text = "Following: \(user!.followsCount!)"
+        if user != nil {
+            if APIHandler.offlineMode {
+                reusableView.avatar.image = UIImage(data: Data(base64Encoded: user!.avatar)!)
+            } else {
+                reusableView.avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: user!.avatar)!, cacheKey: user!.avatar))
+            }
+        }
+        reusableView.fullName.text = user?.fullName
+        reusableView.followers.text = "Followers: \(user?.followedByCount ?? 0)"
+        reusableView.following.text = "Following: \(user?.followsCount ?? 0)"
         reusableView.myDelegate = self
         reusableView.user = user
-        if user!.id == APIHandler.currentUserId {
+        if user?.id == APIHandler.currentUserId || APIHandler.offlineMode {
             reusableView.followButton.isHidden = true
             return reusableView
-        } else if user!.currentUserFollowsThisUser != false {
+        } else if user?.currentUserFollowsThisUser != false {
             reusableView.currentUserFollowing = true
             reusableView.followButton.isHidden = false
             return reusableView

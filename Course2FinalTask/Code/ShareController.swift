@@ -28,7 +28,11 @@ class ShareController: UIViewController {
     }
 
     @objc func shareAction() {
-        apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {
+        apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {post in
+            guard let post = post else {
+                self.generateAlert(title: "Oops!", message: "There is no post.", buttonTitle: "OK")
+                return
+            }
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "ToFeed", sender: self)
                 (self.tabBarController?.viewControllers?[0].children[0] as! FeedViewController).getFeed()
@@ -42,11 +46,16 @@ class ShareController: UIViewController {
 
 extension ShareController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {
+        apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {post in
+            guard let post = post else {
+                self.generateAlert(title: "Oops!", message: "There is no post.", buttonTitle: "OK")
+                return
+            }
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "ToFeed", sender: self)
                 (self.tabBarController?.viewControllers?[0].children[0] as! FeedViewController).getFeed()
                 self.navigationController?.popToRootViewController(animated: true)
+
             }
         })
         return true
