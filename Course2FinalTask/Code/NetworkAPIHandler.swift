@@ -224,6 +224,7 @@ class APIHandler {
                 if id == APIHandler.currentUserId {
                     let fetchedPosts = dataManager?.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(id!)")]))
                     let newPosts = fetchedPosts?.importFromCoreDataToJSON(Post.self)
+                    print("fetched user posts count: \(fetchedPosts?.count ?? 0)")
                     completionHandler?(newPosts)
                 } else {
                     delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
@@ -393,6 +394,7 @@ class APIHandler {
         request.addValue(token ?? "", forHTTPHeaderField: "token")
         request.httpMethod = "GET"
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            Darwin.sleep(2)
             if error != nil {
                 APIHandler.offlineMode = true
                 completionHandler?(.offlineMode)

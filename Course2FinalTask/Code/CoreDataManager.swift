@@ -62,6 +62,8 @@ final class CoreDataManager {
         var fetchedResult = [T]()
         request = entity.fetchRequest() as! NSFetchRequest<T>
         request.predicate = predicate
+        request.fetchBatchSize = 0
+        request.fetchLimit = 100
         if T() is CoreDataPost {
             let sortDescriptor = NSSortDescriptor(key: "createdTime", ascending: false)
             request.sortDescriptors = [sortDescriptor]

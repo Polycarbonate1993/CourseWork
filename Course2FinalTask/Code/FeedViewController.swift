@@ -43,7 +43,7 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
             if APIHandler.offlineMode == false {
                 self.saveFeedToDataBase()
             }
-            print(self.feedData.count)
+            print("loaded data from server count: \(self.feedData.count)")
             DispatchQueue.main.async {
                 self.feed.reloadData()
             }

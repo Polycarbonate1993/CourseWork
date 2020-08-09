@@ -61,11 +61,19 @@ class LoginViewController: UIViewController {
         var queryResult: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer(&queryResult))
         print("keychain status: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)")
+        
         if status == errSecSuccess {
+            print("smth")
             guard let item = queryResult as? [String: Any], let tokenData = item[kSecValueData as String] as? Data, let token = String(data: tokenData, encoding: .utf8) else {
                 return
             }
+            DispatchQueue.main.async {
+                Spinner.start()
+            }
             apiHandler.checkToken(token, completionHandler: {tokenCheck in
+                DispatchQueue.main.async {
+                    Spinner.stop()
+                }
                 switch tokenCheck {
                 case .valid:
                     APIHandler.token = token

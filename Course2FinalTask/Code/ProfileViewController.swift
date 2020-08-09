@@ -36,17 +36,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
                             }
                         })
                     }
-                    if APIHandler.offlineMode == false {
-                        let fetchedPosts = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(APIHandler.currentUserId!)")]))
-                        let context = (self.tabBarController as! TabBarController).dataManager.getContext()
-                        if !fetchedPosts.isEmpty {
-                            for post in fetchedPosts {
-                                (self.tabBarController as! TabBarController).dataManager.delete(object: post)
-                            }
-                        }
-                        let coreDataPosts: [CoreDataPost] = self.userPosts.exportToCoreDataFromDecodedJSONData(withMarker: false, CoreDataPost.self)
-                        (self.tabBarController as! TabBarController).dataManager.save(context: context)
-                    }
                     DispatchQueue.main.async {
                         self.profile?.reloadData()
                     }
