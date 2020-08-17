@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 import Kingfisher
+import OAuthSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,17 +18,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        window = UIWindow(frame: UIScreen.main.bounds)
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        let LoginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
-        
-        window?.rootViewController = LoginViewController
-        
-        window?.makeKeyAndVisible()
+//        window = UIWindow(frame: UIScreen.main.bounds)
+//        
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        
+//        let LoginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
+//        
+//        window?.rootViewController = LoginViewController
+//        
+//        window?.makeKeyAndVisible()
         
         return true
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey  : Any] = [:]) -> Bool {
+      if url.host == "oauth-callback" {
+        OAuthSwift.handle(url: url)
+      }
+      return true
     }
 }
 
