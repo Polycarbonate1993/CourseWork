@@ -1,0 +1,11 @@
+{
+  "commitish" : "5.2.0",
+  "iOS" : [
+    {
+      "hash" : "46fe14a5b6c033dc0f64f70474b3c348f8beed21d5733ebde4a2cbfd30aad252",
+      "name" : "OAuth2",
+      "linking" : "dynamic",
+      "swiftToolchainVersion" : "5.2.4 (swiftlang-1103.0.32.9 clang-1103.0.32.53)"
+    }
+  ]
+}

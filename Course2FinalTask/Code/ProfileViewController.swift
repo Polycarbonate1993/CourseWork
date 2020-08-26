@@ -51,25 +51,25 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         apiHandler.delegate = self
-        if user == nil {
-            apiHandler.get(.user, withID: nil, completionHandler: {fetchedUser in
-                guard let newUser = fetchedUser as? User else {
-                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-                    return
-                }
-                APIHandler.currentUserId = newUser.id
-                self.user = newUser
-                if APIHandler.offlineMode == false {
-                    let fetchedUser = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataUser.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")]))
-                    if !fetchedUser.isEmpty {
-                        (self.tabBarController as! TabBarController).dataManager.delete(object: fetchedUser.first!)
-                    }
-                    let coreDataUser: [CoreDataUser] = [self.user].exportToCoreDataFromDecodedJSONData(withMarker: true, CoreDataUser.self)
-                    let context = (self.tabBarController as! TabBarController).dataManager.getContext()
-                    (self.tabBarController as! TabBarController).dataManager.save(context: context)
-                }
-            })
-        }
+//        if user == nil {
+//            apiHandler.get(.user, withID: nil, completionHandler: {fetchedUser in
+//                guard let newUser = fetchedUser as? User else {
+//                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
+//                    return
+//                }
+//                APIHandler.currentUserId = newUser.id
+//                self.user = newUser
+//                if APIHandler.offlineMode == false {
+//                    let fetchedUser = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataUser.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")]))
+//                    if !fetchedUser.isEmpty {
+//                        (self.tabBarController as! TabBarController).dataManager.delete(object: fetchedUser.first!)
+//                    }
+//                    let coreDataUser: [CoreDataUser] = [self.user].exportToCoreDataFromDecodedJSONData(withMarker: true, CoreDataUser.self)
+//                    let context = (self.tabBarController as! TabBarController).dataManager.getContext()
+//                    (self.tabBarController as! TabBarController).dataManager.save(context: context)
+//                }
+//            })
+//        }
         profile.dataSource = self
         profile.delegate = self
         profile.register(UINib(nibName: "ProfileCell", bundle: nil), forCellWithReuseIdentifier: "ProfileSample")

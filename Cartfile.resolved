@@ -1,2 +1,2 @@
-github "OAuthSwift/OAuthSwift" "2.1.2"
-github "onevcat/Kingfisher" "5.14.1"
+github "onevcat/Kingfisher" "5.15.0"
+github "p2/OAuth2" "5.2.0"

@@ -7,48 +7,60 @@
 //
 
 import UIKit
-import OAuthSwift
 
-class ViewController: OAuthViewController {
-    var oauthSwift: OAuth1Swift!
+import MastodonKit
+import OAuth2
 
+class ViewController: UIViewController {
+
+    var oAuth2: OAuth2CodeGrant!
+    
+    var mastodonApiHandler: Client?
+    
+    @IBOutlet weak var request: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        if mastodonApiHandler == nil {
+            request.isHidden = true
+        }
+        oAuth2.authConfig.authorizeEmbedded = true
+        oAuth2.authConfig.ui.modalPresentationStyle = .pageSheet
+        oAuth2.authConfig.authorizeContext = self
         // Do any additional setup after loading the view.
     }
     
 
     @IBAction func button(_ sender: Any) {
-        let oauth = OAuth1Swift(consumerKey: "c9a7b8ee063f37008571b52fb74ab265", consumerSecret: "2d348200430ad573", requestTokenUrl: "https://www.flickr.com/services/oauth/request_token", authorizeUrl: "https://www.flickr.com/services/oauth/authorize", accessTokenUrl: "https://www.flickr.com/services/oauth/access_token")
-        oauthSwift = oauth
-        oauth.authorizeURLHandler = SafariURLHandler(viewController: self, oauthSwift: oauth)
-        oauth.authorize(withCallbackURL: "PhotoNetwork://oauth-callback/flickr", completionHandler: {result in
+        oAuth2.forgetTokens()
+        oAuth2.authorizeEmbedded(from: self, callback: {json, error in
+            guard var data = json else {
+                print(error!.description)
+                return
+            }
+            if data.isEmpty {
+                data["access_token"] = self.oAuth2.accessToken!
+            }
+            print(data)
+            self.mastodonApiHandler = Client(baseURL: "https://mstdn.social", accessToken: (data["access_token"] as! String))
+            NewAPIHandler(accessToken: data["access_token"] as! String, completionHandler: {
+                DispatchQueue.main.async {
+                    let newVC = self.storyboard?.instantiateViewController(identifier: "FeedViewController") as! FeedViewController
+                    newVC.modalPresentationStyle = .fullScreen
+                    self.request.isHidden = false
+                    self.present(newVC, animated: true, completion: nil)
+                }
+            })
+            
+        })
+    }
+    @IBAction func request(_ sender: Any) {
+        let request = Accounts.currentUser()
+        mastodonApiHandler?.run(request, completion: {result in
             switch result {
-            case .success(let response):
-                let string = response.response?.dataString()
-                let arrayString = string?.components(separatedBy: "&")
-                let croppedString = arrayString?[3]
-                let id = croppedString![String.Index(utf16Offset: 10, in: croppedString!)...]
-                
-                oauth.client.get("https://www.flickr.com/services/rest/", parameters: [
-                    "api_key": "\(response.credential.consumerKey)",
-                    "method": "flickr.photos.search",
-                    "format": "json",
-                    "nojsoncallback" : "1",
-                    "extras": "url_o",
-                    "user_id": "me"
-                ], completionHandler: {result in
-                    switch result {
-                    case .success(let response):
-                        let jsonObject = try? response.jsonObject()
-                        print(jsonObject as Any)
-                    case .failure(let error):
-                        print(error.description)
-                    }
-                })
+            case .success(let account, _):
+                print(account.displayName)
             case .failure(let error):
-                print("error: \(error.description)")
+                print(error.localizedDescription)
             }
         })
     }

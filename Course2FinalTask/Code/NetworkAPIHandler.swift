@@ -202,38 +202,38 @@ class APIHandler {
     ///
     func get(_ scenario: CaseSwitcher, withID id: String? = nil, completionHandler: ((DecodedJSONData?) -> Void)? = nil) {
         if APIHandler.offlineMode {
-            let dataManager = (delegate?.tabBarController as? TabBarController)?.dataManager
-            switch scenario {
-            case .feed:
-                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "inFeed == TRUE")])
-                let fetchedFeed = dataManager?.fetchData(for: CoreDataPost.self, predicate: predicate)
-                let newFeed = fetchedFeed?.importFromCoreDataToJSON(Post.self)
-                print("fetched feed count: \(fetchedFeed?.count ?? 0)\nnew feed count: \(newFeed?.count ?? 0)")
-                completionHandler?(newFeed)
-            case .user:
-                if id == nil {
-                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")])
-                    let fetchedUser = dataManager?.fetchData(for: CoreDataUser.self, predicate: predicate)
-                    let newUser = fetchedUser?.importFromCoreDataToJSON(User.self)
-                    completionHandler?(newUser?[0])
-                } else {
-                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
-                    break
-                }
-            case .userPosts:
-                if id == APIHandler.currentUserId {
-                    let fetchedPosts = dataManager?.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(id!)")]))
-                    let newPosts = fetchedPosts?.importFromCoreDataToJSON(Post.self)
-                    print("fetched user posts count: \(fetchedPosts?.count ?? 0)")
-                    completionHandler?(newPosts)
-                } else {
-                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
-                    break
-                }
-            default:
-                delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
-                break
-            }
+//            let dataManager = (delegate?.tabBarController as? TabBarController)?.dataManager
+//            switch scenario {
+//            case .feed:
+//                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "inFeed == TRUE")])
+//                let fetchedFeed = dataManager?.fetchData(for: CoreDataPost.self, predicate: predicate)
+//                let newFeed = fetchedFeed?.importFromCoreDataToJSON(Post.self)
+//                print("fetched feed count: \(fetchedFeed?.count ?? 0)\nnew feed count: \(newFeed?.count ?? 0)")
+//                completionHandler?(newFeed)
+//            case .user:
+//                if id == nil {
+//                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "isCurrentUser == TRUE")])
+//                    let fetchedUser = dataManager?.fetchData(for: CoreDataUser.self, predicate: predicate)
+//                    let newUser = fetchedUser?.importFromCoreDataToJSON(User.self)
+//                    completionHandler?(newUser?[0])
+//                } else {
+//                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+//                    break
+//                }
+//            case .userPosts:
+//                if id == APIHandler.currentUserId {
+//                    let fetchedPosts = dataManager?.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "author == \(id!)")]))
+//                    let newPosts = fetchedPosts?.importFromCoreDataToJSON(Post.self)
+//                    print("fetched user posts count: \(fetchedPosts?.count ?? 0)")
+//                    completionHandler?(newPosts)
+//                } else {
+//                    delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+//                    break
+//                }
+//            default:
+//                delegate?.generateAlert(title: "Offline Mode", message: "Functionality is limited", buttonTitle: "OK")
+//                break
+//            }
         } else {
             var request: URLRequest
             switch scenario {

@@ -8,34 +8,47 @@
 import UIKit
 import CoreData
 import Kingfisher
-import OAuthSwift
+import OAuth2
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
+    let oAuth2 = OAuth2CodeGrant(settings: [
+        "client_id": "ac4DFdmEXNquMLFjYkRJFEqntn6gookPIxj_QeZlOwc",
+        "client_secret": "TfwMrdebdWkMIjC4TDW7pkFdw5QCx1tzqQOyg2z97r4",
+        "authorize_uri": "https://mstdn.social/oauth/authorize",
+        "token_uri": "https://mstdn.social/oauth/token",   // code grant only
+        "redirect_uris": ["photonetwork://oauth-callback"],   // register your own "myapp" scheme in Info.plist
+        "scope": "read write follow",
+        "keychain": "false"
+    ] as OAuth2JSON)
+    
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-//        window = UIWindow(frame: UIScreen.main.bounds)
-//        
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        
-//        let LoginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
-//        
-//        window?.rootViewController = LoginViewController
-//        
-//        window?.makeKeyAndVisible()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+ 
+        let LoginViewController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
+        
+        LoginViewController.oAuth2 = self.oAuth2
+
+        window?.rootViewController = LoginViewController
+     
+        window?.makeKeyAndVisible()
         
         return true
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey  : Any] = [:]) -> Bool {
-      if url.host == "oauth-callback" {
-        OAuthSwift.handle(url: url)
-      }
-      return true
+        if url.host == "oauth-callback" {
+            oAuth2.handleRedirectURL(url)
+            return true
+        }
+      return false
     }
 }
 
@@ -75,80 +88,80 @@ extension UIViewController {
 
 extension Array {
     func importFromCoreDataToJSON<T: DecodedJSONData>(_ typeSelected: T.Type) -> [T] {
-        if let posts = self as? [CoreDataPost] {
-            var newArray: [Post] = []
-            for item in posts {
-                let post = Post()
-                post.author = item.author
-                post.authorAvatar = (item.authorAvatar!).base64EncodedString()
-                post.authorUsername = item.authorUsername
-                post.createdTime = item.createdTime
-                post.currentUserLikesThisPost = item.currentUserLikesThisPost
-                post.description = item.postDescription
-                post.id = item.id
-                post.image = (item.image!).base64EncodedString()
-                post.likedByCount = Int(item.likedByCount)
-                newArray.append(post)
-            }
-            return newArray as! [T]
-        } else if let users = self as? [CoreDataUser] {
-            var newArray: [User] = []
-            for item in users {
-                let user = User()
-                user.avatar = (item.avatar!).base64EncodedString()
-                user.currentUserFollowsThisUser = item.currentUserFollowsThisUser
-                user.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
-                user.followedByCount = Int(item.followedByCount)
-                user.followsCount = Int(item.followsCount)
-                user.fullName = item.fullname
-                user.id = item.id
-                user.username = item.username
-                newArray.append(user)
-            }
-            return newArray as! [T]
-        }
+//        if let posts = self as? [CoreDataPost] {
+//            var newArray: [Post] = []
+//            for item in posts {
+//                let post = Post()
+//                post.author = item.author
+//                post.authorAvatar = (item.authorAvatar!).base64EncodedString()
+//                post.authorUsername = item.authorUsername
+//                post.createdTime = item.createdTime
+//                post.currentUserLikesThisPost = item.currentUserLikesThisPost
+//                post.description = item.postDescription
+//                post.id = item.id
+//                post.image = (item.image!).base64EncodedString()
+//                post.likedByCount = Int(item.likedByCount)
+//                newArray.append(post)
+//            }
+//            return newArray as! [T]
+//        } else if let users = self as? [CoreDataUser] {
+//            var newArray: [User] = []
+//            for item in users {
+//                let user = User()
+//                user.avatar = (item.avatar!).base64EncodedString()
+//                user.currentUserFollowsThisUser = item.currentUserFollowsThisUser
+//                user.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
+//                user.followedByCount = Int(item.followedByCount)
+//                user.followsCount = Int(item.followsCount)
+//                user.fullName = item.fullname
+//                user.id = item.id
+//                user.username = item.username
+//                newArray.append(user)
+//            }
+//            return newArray as! [T]
+//        }
         return []
     }
     
     func exportToCoreDataFromDecodedJSONData<T: NSManagedObject>(withMarker: Bool = false, _ selectedType: T.Type) -> [T] {
-        if let posts = self as? [Post] {
-            var newArray: [CoreDataPost] = []
-            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager
-            for item in posts {
-                let coreDataPost = dataManager!.createObject(from: CoreDataPost.self)
-                coreDataPost.author = item.author
-                coreDataPost.authorAvatar = fromStringURLToData(item.authorAvatar)
-                coreDataPost.authorUsername = item.authorUsername
-                coreDataPost.createdTime = item.createdTime
-                coreDataPost.id = item.id
-                coreDataPost.image = fromStringURLToData(item.image)
-                coreDataPost.likedByCount = Int16(item.likedByCount)
-                coreDataPost.postDescription = item.description
-                coreDataPost.currentUserLikesThisPost = item.currentUserLikesThisPost
-                coreDataPost.inFeed = withMarker
-                newArray.append(coreDataPost)
-            }
+//        if let posts = self as? [Post] {
+//            var newArray: [CoreDataPost] = []
+//            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager
+//            for item in posts {
+//                let coreDataPost = dataManager!.createObject(from: CoreDataPost.self)
+//                coreDataPost.author = item.author
+//                coreDataPost.authorAvatar = fromStringURLToData(item.authorAvatar)
+//                coreDataPost.authorUsername = item.authorUsername
+//                coreDataPost.createdTime = item.createdTime
+//                coreDataPost.id = item.id
+//                coreDataPost.image = fromStringURLToData(item.image)
+//                coreDataPost.likedByCount = Int16(item.likedByCount)
+//                coreDataPost.postDescription = item.description
+//                coreDataPost.currentUserLikesThisPost = item.currentUserLikesThisPost
+//                coreDataPost.inFeed = withMarker
+//                newArray.append(coreDataPost)
+//            }
+////            print(newArray)
+//            return newArray as! [T]
+//        } else if let users = self as? [User] {
+//            var newArray: [CoreDataUser] = []
+//            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager!
+//            for item in users {
+//                let coreDataUser = dataManager.createObject(from: CoreDataUser.self)
+//                coreDataUser.avatar = fromStringURLToData(item.avatar)
+//                coreDataUser.currentUserFollowsThisUser = item.currentUserFollowsThisUser
+//                coreDataUser.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
+//                coreDataUser.followedByCount = Int16(item.followedByCount)
+//                coreDataUser.followsCount = Int16(item.followsCount)
+//                coreDataUser.fullname = item.fullName
+//                coreDataUser.id = item.id
+//                coreDataUser.username = item.username
+//                coreDataUser.isCurrentUser = withMarker
+//                newArray.append(coreDataUser)
+//            }
 //            print(newArray)
-            return newArray as! [T]
-        } else if let users = self as? [User] {
-            var newArray: [CoreDataUser] = []
-            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager!
-            for item in users {
-                let coreDataUser = dataManager.createObject(from: CoreDataUser.self)
-                coreDataUser.avatar = fromStringURLToData(item.avatar)
-                coreDataUser.currentUserFollowsThisUser = item.currentUserFollowsThisUser
-                coreDataUser.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
-                coreDataUser.followedByCount = Int16(item.followedByCount)
-                coreDataUser.followsCount = Int16(item.followsCount)
-                coreDataUser.fullname = item.fullName
-                coreDataUser.id = item.id
-                coreDataUser.username = item.username
-                coreDataUser.isCurrentUser = withMarker
-                newArray.append(coreDataUser)
-            }
-            print(newArray)
-            return newArray as! [T]
-        }
+//            return newArray as! [T]
+//        }
         return []
     }
 }
@@ -181,5 +194,33 @@ open class Spinner {
             spinner!.removeFromSuperview()
             spinner = nil
         }
+    }
+}
+
+extension UIColor {
+    public convenience init?(hex: String) {
+        let r, g, b, a: CGFloat
+
+        if hex.hasPrefix("#") {
+            let start = hex.index(hex.startIndex, offsetBy: 1)
+            let hexColor = String(hex[start...])
+
+            if hexColor.count == 8 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    a = CGFloat(hexNumber & 0x000000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            }
+        }
+
+        return nil
     }
 }

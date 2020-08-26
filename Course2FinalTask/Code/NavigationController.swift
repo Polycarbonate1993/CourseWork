@@ -42,8 +42,6 @@ extension NavigationController: UINavigationControllerDelegate {
                 }
                 (viewController as! ProfileViewController).user = currentUser
             })
-        } else if viewController is FeedViewController {
-            (viewController as! FeedViewController).getFeed()
         }
     }
 }

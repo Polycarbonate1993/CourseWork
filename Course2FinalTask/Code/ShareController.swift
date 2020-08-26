@@ -35,7 +35,6 @@ class ShareController: UIViewController {
             }
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "ToFeed", sender: self)
-                (self.tabBarController?.viewControllers?[0].children[0] as! FeedViewController).getFeed()
                 self.navigationController?.popToRootViewController(animated: true)
             }
         })
@@ -53,9 +52,7 @@ extension ShareController: UITextFieldDelegate {
             }
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "ToFeed", sender: self)
-                (self.tabBarController?.viewControllers?[0].children[0] as! FeedViewController).getFeed()
                 self.navigationController?.popToRootViewController(animated: true)
-
             }
         })
         return true

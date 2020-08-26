@@ -59,7 +59,9 @@
 		D12E0C561C47F23500AC98AD /* KingfisherOptionsInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12E0C4B1C47F23500AC98AD /* KingfisherOptionsInfoTests.swift */; };
 		D12E0C571C47F23500AC98AD /* KingfisherTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12E0C4C1C47F23500AC98AD /* KingfisherTestHelper.swift */; };
 		D12E0C581C47F23500AC98AD /* UIButtonExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12E0C4E1C47F23500AC98AD /* UIButtonExtensionTests.swift */; };
+		D12EB83C24DD8EFC00329EE1 /* NSTextAttachment+Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12EB83B24DD8EFC00329EE1 /* NSTextAttachment+Kingfisher.swift */; };
 		D13646742165A1A100A33652 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13646732165A1A100A33652 /* Result.swift */; };
+		D16CC3D624E02E9500F1A515 /* AVAssetImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16CC3D524E02E9500F1A515 /* AVAssetImageDataProvider.swift */; };
 		D16FEA3A23078C63006E67D5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = D16FE9F623078C63006E67D5 /* LICENSE */; };
 		D16FEA3B23078C63006E67D5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D16FE9F723078C63006E67D5 /* README.md */; };
 		D16FEA3C23078C63006E67D5 /* LSStubRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D16FE9FA23078C63006E67D5 /* LSStubRequest.m */; };
@@ -184,7 +186,9 @@
 		D12E0C4C1C47F23500AC98AD /* KingfisherTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KingfisherTestHelper.swift; sourceTree = "<group>"; };
 		D12E0C4D1C47F23500AC98AD /* KingfisherTests-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KingfisherTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		D12E0C4E1C47F23500AC98AD /* UIButtonExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonExtensionTests.swift; sourceTree = "<group>"; };
+		D12EB83B24DD8EFC00329EE1 /* NSTextAttachment+Kingfisher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTextAttachment+Kingfisher.swift"; sourceTree = "<group>"; };
 		D13646732165A1A100A33652 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		D16CC3D524E02E9500F1A515 /* AVAssetImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVAssetImageDataProvider.swift; sourceTree = "<group>"; };
 		D16FE9F623078C63006E67D5 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		D16FE9F723078C63006E67D5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D16FE9FA23078C63006E67D5 /* LSStubRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSStubRequest.m; sourceTree = "<group>"; };
@@ -366,6 +370,7 @@
 		D12AB6AB215D2BB50013BA68 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				D12EB83B24DD8EFC00329EE1 /* NSTextAttachment+Kingfisher.swift */,
 				D12AB6AC215D2BB50013BA68 /* ImageView+Kingfisher.swift */,
 				D12AB6AD215D2BB50013BA68 /* NSButton+Kingfisher.swift */,
 				D12AB6AE215D2BB50013BA68 /* UIButton+Kingfisher.swift */,
@@ -624,6 +629,7 @@
 				D1A1CC99219FAB4B00263AD8 /* Source.swift */,
 				D12AB69E215D2BB50013BA68 /* Resource.swift */,
 				D1E56444219B16330057AAE3 /* ImageDataProvider.swift */,
+				D16CC3D524E02E9500F1A515 /* AVAssetImageDataProvider.swift */,
 			);
 			path = ImageSource;
 			sourceTree = "<group>";
@@ -749,7 +755,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Wei Wang";
 				TargetAttributes = {
 					D1ED2D341AD2D09F00CFC3EB = {
@@ -810,6 +816,7 @@
 				D12AB6E4215D2BB50013BA68 /* Placeholder.swift in Sources */,
 				4B46CC6921744AC500D90C4A /* DiskStorage.swift in Sources */,
 				4B46CC5F217449C600D90C4A /* MemoryStorage.swift in Sources */,
+				D16CC3D624E02E9500F1A515 /* AVAssetImageDataProvider.swift in Sources */,
 				D1839845216E333E003927D3 /* Delegate.swift in Sources */,
 				D12AB6D8215D2BB50013BA68 /* ImageTransition.swift in Sources */,
 				D1A37BE8215D365A009B39B7 /* ExtensionHelpers.swift in Sources */,
@@ -830,6 +837,7 @@
 				D12AB6C8215D2BB50013BA68 /* ImageDownloader.swift in Sources */,
 				D11D9B72245FA6F700C5A0AE /* RetryStrategy.swift in Sources */,
 				D1A37BE3215D359F009B39B7 /* ImageFormat.swift in Sources */,
+				D12EB83C24DD8EFC00329EE1 /* NSTextAttachment+Kingfisher.swift in Sources */,
 				D12AB714215D2BB50013BA68 /* ImageCache.swift in Sources */,
 				D12AB6D0215D2BB50013BA68 /* ImagePrefetcher.swift in Sources */,
 				D12AB6F4215D2BB50013BA68 /* ImageView+Kingfisher.swift in Sources */,
@@ -950,6 +958,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -984,7 +993,7 @@
 				SUPPORTED_PLATFORMS = "watchsimulator iphonesimulator appletvsimulator watchos appletvos iphoneos macosx";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,4";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 				WATCHOS_DEPLOYMENT_TARGET = 3.0;
@@ -1014,6 +1023,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1040,7 +1050,7 @@
 				SUPPORTED_PLATFORMS = "watchsimulator iphonesimulator appletvsimulator watchos appletvos iphoneos macosx";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,4";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 				WATCHOS_DEPLOYMENT_TARGET = 3.0;
@@ -1064,9 +1074,9 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
-				CURRENT_PROJECT_VERSION = 2006;
+				CURRENT_PROJECT_VERSION = 2029;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 2006;
+				DYLIB_CURRENT_VERSION = 2029;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -1114,9 +1124,9 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
-				CURRENT_PROJECT_VERSION = 2006;
+				CURRENT_PROJECT_VERSION = 2029;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 2006;
+				DYLIB_CURRENT_VERSION = 2029;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -1199,9 +1209,9 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
-				CURRENT_PROJECT_VERSION = 2006;
+				CURRENT_PROJECT_VERSION = 2029;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 2006;
+				DYLIB_CURRENT_VERSION = 2029;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -1254,9 +1264,9 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES_AGGRESSIVE;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
-				CURRENT_PROJECT_VERSION = 2006;
+				CURRENT_PROJECT_VERSION = 2029;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 2006;
+				DYLIB_CURRENT_VERSION = 2029;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
