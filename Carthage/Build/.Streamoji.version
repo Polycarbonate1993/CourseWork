@@ -1,0 +1,11 @@
+{
+  "commitish" : "0.1.8",
+  "iOS" : [
+    {
+      "hash" : "27dff8eedab7122278806c563b9884fd0e9b622307576ff0ee481f00fa1a1d40",
+      "name" : "Streamoji",
+      "linking" : "dynamic",
+      "swiftToolchainVersion" : "5.2.4 (swiftlang-1103.0.32.9 clang-1103.0.32.53)"
+    }
+  ]
+}

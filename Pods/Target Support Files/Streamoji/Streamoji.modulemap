@@ -1,0 +1,6 @@
+module Streamoji {
+  umbrella header "Streamoji-umbrella.h"
+
+  export *
+  module * { export * }
+}
