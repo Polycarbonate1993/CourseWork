@@ -20,9 +20,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var request: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        if mastodonApiHandler == nil {
-            request.isHidden = true
-        }
         oAuth2.authConfig.authorizeEmbedded = true
         oAuth2.authConfig.ui.modalPresentationStyle = .pageSheet
         oAuth2.authConfig.authorizeContext = self
@@ -45,8 +42,7 @@ class ViewController: UIViewController {
             NewAPIHandler(accessToken: data["access_token"] as! String, completionHandler: {
                 DispatchQueue.main.async {
                     let newVC = self.storyboard?.instantiateViewController(identifier: "FeedViewController") as! FeedViewController
-                    newVC.modalPresentationStyle = .fullScreen
-                    self.request.isHidden = false
+                    newVC.modalPresentationStyle = .pageSheet
                     self.present(newVC, animated: true, completion: nil)
                 }
             })
@@ -54,14 +50,26 @@ class ViewController: UIViewController {
         })
     }
     @IBAction func request(_ sender: Any) {
-        let request = Accounts.currentUser()
-        mastodonApiHandler?.run(request, completion: {result in
-            switch result {
-            case .success(let account, _):
-                print(account.displayName)
-            case .failure(let error):
-                print(error.localizedDescription)
+        oAuth2.forgetTokens()
+        oAuth2.authorizeEmbedded(from: self, callback: {json, error in
+            guard var data = json else {
+                print(error!.description)
+                return
             }
+            if data.isEmpty {
+                data["access_token"] = self.oAuth2.accessToken!
+                print("empty")
+            }
+            print(data)
+            self.mastodonApiHandler = Client(baseURL: "https://mstdn.social", accessToken: (data["access_token"] as! String))
+            NewAPIHandler(accessToken: data["access_token"] as! String, completionHandler: {
+                DispatchQueue.main.async {
+                    let newVC = self.storyboard?.instantiateViewController(identifier: "Profile") as! ProfileViewController
+                    newVC.modalPresentationStyle = .fullScreen
+                    self.present(newVC, animated: true, completion: nil)
+                }
+            })
+            
         })
     }
     /*

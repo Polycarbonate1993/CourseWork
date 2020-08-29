@@ -9,6 +9,7 @@
 import UIKit
 import Kingfisher
 import MastodonKit
+import Streamoji
 
 class FeedCell: UICollectionViewCell {
 
@@ -25,7 +26,18 @@ class FeedCell: UICollectionViewCell {
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var displayName: UILabel!
     let apiHandler = APIHandler()
-    var post: Status?
+    var post: Status? {
+        didSet {
+            guard let emojis = post?.emojis else {
+                print("something wrong with emoji")
+                return
+            }
+            for item in emojis {
+                emojiSource[item.shortcode] = .imageUrl(item.staticURL.absoluteString)
+            }
+        }
+    }
+    var emojiSource: [String: EmojiSource] = [:]
     weak var delegate: FeedCellDelegate?
     
     // MARK: - View configuration
@@ -43,14 +55,14 @@ class FeedCell: UICollectionViewCell {
         avatar.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         username.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         likes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toLikes)))
-        self.contentView.layer.cornerRadius = 40
+        self.contentView.layer.cornerRadius = contentView.bounds.size.width / 10
         self.contentView.layer.masksToBounds = true
         self.layer.masksToBounds = false
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.6
         self.layer.shadowOffset = CGSize(width: 2, height: 2)
         mainView.backgroundColor = UIColor(named: "background")
-        avatar.layer.cornerRadius = avatar.bounds.width/2
+        avatar.layer.cornerRadius = 40
     }
     
     func fill() {
@@ -68,6 +80,7 @@ class FeedCell: UICollectionViewCell {
         if attributedDescription!.string != "" {
             attributedDescription?.deleteCharacters(in: NSRange.init(location: attributedDescription!.length - 1, length: 1))
             descriptionText.attributedText = attributedDescription
+//            descriptionText.configureEmojis(emojiSource, rendering: .lowQuality)
             descriptionText.font = UIFont.init(name: "Helvetica-Bold", size: 14)
             descriptionText.textColor = UIColor(named: "label")
         } else {
@@ -81,9 +94,9 @@ class FeedCell: UICollectionViewCell {
         username.textColor = UIColor(named: "secondaryLabel")
         mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: status.mediaAttachments[0].previewURL)!, cacheKey: status.mediaAttachments[0].previewURL))
         if status.favourited! {
-            likeButton.tintColor = .systemBlue
+            likeButton.tintColor = UIColor(named: "liked")
         } else {
-            likeButton.tintColor = .lightGray
+            likeButton.tintColor = UIColor(named: "unliked")
         }
     }
     

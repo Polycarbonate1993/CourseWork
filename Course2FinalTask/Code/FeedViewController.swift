@@ -33,7 +33,12 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         let layout = feed.collectionViewLayout as! UICollectionViewFlowLayout
         layout.estimatedItemSize = CGSize(width: 1, height: 1)
         feed.backgroundColor = .clear
-        view.backgroundColor = UIColor(patternImage: UIImage(named: "daycopy.png")!)
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            view.backgroundColor = UIColor(patternImage: UIImage(named: "nightcopy.png")!)
+        } else {
+            view.backgroundColor = UIColor(patternImage: UIImage(named: "daycopy.png")!)
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,8 +51,9 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
                 CATransaction.begin()
                 CATransaction.setCompletionBlock({
                     print("reload completed")
-                    self.feed.scrollToItem(at: IndexPath.init(item: 1, section: 0), at: .top, animated: false)
-                    self.feed.scrollToItem(at: IndexPath.init(item: 0, section: 0), at: .top, animated: false)
+//                    self.feed.scrollToItem(at: IndexPath.init(item: 1, section: 0), at: .top, animated: false)
+//                    self.feed.scrollToItem(at: IndexPath.init(item: 0, section: 0), at: .top, animated: false)
+                    self.feed.collectionViewLayout.invalidateLayout()
                     self.feed.isHidden = false
                     //Your completion code here
                 })

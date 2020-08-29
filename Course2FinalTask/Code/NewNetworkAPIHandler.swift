@@ -12,7 +12,7 @@ import UIKit
 
 class NewAPIHandler {
     
-    static private var client = Client(baseURL: "https://mstdn.social")
+    static var client = Client(baseURL: "https://mstdn.social")
     static var currentUserID: String?
     var delegate: UIViewController?
     
@@ -27,7 +27,7 @@ class NewAPIHandler {
                     completionHandler()
                 case .failure(let error):
                     print(4)
-                    self.delegate?.generateAlert(title: "Oops!1", message: error.asOAuth2Error.description, buttonTitle: "Try Again Later")
+                    self.delegate?.generateAlert(title: "Oops!", message: error.asOAuth2Error.description, buttonTitle: "Try Again Later")
                 }
             })
         }
@@ -47,7 +47,8 @@ class NewAPIHandler {
                 print(feed.count)
                 completionHandler?(feed)
             case .failure(let error):
-                self.delegate?.generateAlert(title: "Oops!2", message: error.localizedDescription, buttonTitle: "Try Again Later")
+                print(error.localizedDescription)
+                self.delegate?.generateAlert(title: "Oops!", message: error.localizedDescription, buttonTitle: "Try Again Later")
             }
         })
     }
@@ -63,11 +64,34 @@ class NewAPIHandler {
                 print(feed.count)
                 completionHandler(feed)
             case .failure(let error):
-                self.delegate?.generateAlert(title: "Oops!2", message: error.localizedDescription, buttonTitle: "Try Again Later")
+                self.delegate?.generateAlert(title: "Oops!", message: error.localizedDescription, buttonTitle: "Try Again Later")
             }
         })
     }
     
+    func getUser(withID id: String, completionHandler: @escaping((Account) -> Void)) {
+        let request = Accounts.account(id: id)
+        NewAPIHandler.client.run(request, completion: {result in
+            switch result {
+            case .success(let account, let pagination):
+                completionHandler(account)
+            case .failure(let error):
+                self.delegate?.generateAlert(title: "Oops!", message: error.asOAuth2Error.description, buttonTitle: "Try Again Later")
+            }
+        })
+    }
+    
+    func getUserPosts(withID id: String, onlyMedia: Bool, range: RequestRange, completionHandler: @escaping(([Status]) -> Void)) {
+        let request = Accounts.statuses(id: id, mediaOnly: onlyMedia, pinnedOnly: false, excludeReplies: true, range: range)
+        NewAPIHandler.client.run(request, completion: {result in
+            switch result {
+            case .success(let statuses, let pagination):
+                completionHandler(statuses)
+            case .failure(let error):
+                self.delegate?.generateAlert(title: "Oops!", message: error.asOAuth2Error.description, buttonTitle: "Try Again Later")
+            }
+        })
+    }
     enum CaseSwitcher {
         case user
         case post

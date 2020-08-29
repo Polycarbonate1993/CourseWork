@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "compression-type" : "lossless",
       "filename" : "daycopy.png",
       "idiom" : "universal",
       "scale" : "1x"

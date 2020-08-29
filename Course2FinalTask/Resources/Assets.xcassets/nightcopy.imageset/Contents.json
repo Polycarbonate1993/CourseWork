@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "compression-type" : "lossless",
       "filename" : "nightcopy.png",
       "idiom" : "universal",
       "scale" : "1x"

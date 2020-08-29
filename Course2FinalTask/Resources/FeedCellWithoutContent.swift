@@ -9,6 +9,8 @@
 import UIKit
 import Kingfisher
 import MastodonKit
+import Streamoji
+
 
 class FeedCellWithoutContent: UICollectionViewCell {
 
@@ -21,7 +23,18 @@ class FeedCellWithoutContent: UICollectionViewCell {
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var displayName: UILabel!
     let apiHandler = APIHandler()
-    var post: Status?
+    var post: Status? {
+        didSet {
+            guard let emojis = post?.emojis else {
+                print("something wrong with emoji")
+                return
+            }
+            for item in emojis {
+                emojiSource[item.shortcode] = .imageUrl(item.staticURL.absoluteString)
+            }
+        }
+    }
+    var emojiSource: [String: EmojiSource] = [:]
     weak var delegate: FeedCellDelegate?
     
     override func awakeFromNib() {
@@ -42,6 +55,7 @@ class FeedCellWithoutContent: UICollectionViewCell {
             self.layer.shadowOffset = CGSize(width: 2, height: 2)
             mainView.backgroundColor = UIColor(named: "background")
             avatar.layer.cornerRadius = avatar.bounds.width/2
+            print("tis is it: \(emojiSource)")
         }
         
     func fill() {
@@ -59,6 +73,7 @@ class FeedCellWithoutContent: UICollectionViewCell {
         if attributedDescription!.string != "" {
             attributedDescription?.deleteCharacters(in: NSRange.init(location: attributedDescription!.length - 1, length: 1))
             descriptionText.attributedText = attributedDescription
+//            descriptionText.configureEmojis(emojiSource, rendering: .lowestQuality)
             descriptionText.font = UIFont.init(name: "Helvetica-Bold", size: 14)
             descriptionText.textColor = UIColor(named: "label")
         } else {
@@ -71,10 +86,11 @@ class FeedCellWithoutContent: UICollectionViewCell {
         username.text = "@" + status.account.username
         username.textColor = UIColor(named: "secondaryLabel")
         if status.favourited! {
-            likeButton.tintColor = .systemBlue
+            likeButton.tintColor = UIColor(named: "liked")
         } else {
-            likeButton.tintColor = .lightGray
+            likeButton.tintColor = UIColor(named: "unliked")
         }
+        self.setNeedsDisplay()
     }
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
             

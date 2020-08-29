@@ -84,7 +84,7 @@ extension UsersTableViewController: UITableViewDataSource, UITableViewDelegate {
         newVC.usernameTitle.title = user.username
         self.indexForRow = indexPath
         (self.tabBarController?.viewControllers?[2] as! UINavigationController).pushViewController(newVC, animated: true)
-        newVC.user = user
+//        newVC.user = user
         self.tabBarController?.selectedViewController = self.tabBarController?.viewControllers?[2]
     }
 }

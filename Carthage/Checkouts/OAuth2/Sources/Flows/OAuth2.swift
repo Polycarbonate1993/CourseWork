@@ -168,7 +168,6 @@ open class OAuth2: OAuth2Base {
 			return (.orderedDescending == expiry.compare(Date()))
 		}
 		return clientConfig.accessTokenAssumeUnexpired
-        return false
 	}
 	
 	/**

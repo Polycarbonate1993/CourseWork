@@ -40,7 +40,6 @@ extension NavigationController: UINavigationControllerDelegate {
                 guard let currentUser = user as? User else {
                     return
                 }
-                (viewController as! ProfileViewController).user = currentUser
             })
         }
     }

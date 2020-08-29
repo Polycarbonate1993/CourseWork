@@ -164,33 +164,36 @@
         <!--Profile-->
         <scene sceneID="vLY-fL-kHU">
             <objects>
-                <viewController storyboardIdentifier="Profile" id="or8-0J-siA" customClass="ProfileViewController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="rCb-8x-LRP">
+                <viewController storyboardIdentifier="Profile" automaticallyAdjustsScrollViewInsets="NO" id="or8-0J-siA" customClass="ProfileViewController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rCb-8x-LRP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="yqT-zl-unB">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="t6z-fE-bF4">
-                                    <size key="itemSize" width="128" height="128"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="yqT-zl-unB">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <collectionViewLayout key="collectionViewLayout" id="gn7-8f-uuI" customClass="PinterestLayout" customModule="Course2FinalTask" customModuleProvider="target"/>
                                 <cells/>
                             </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p05-d0-Dku">
+                                <rect key="frame" x="348" y="820" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="button:" destination="or8-0J-siA" eventType="touchUpInside" id="gSz-5F-7aH"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="yqT-zl-unB" firstAttribute="top" secondItem="LGn-i2-i5b" secondAttribute="top" id="6OX-Uu-BpW"/>
-                            <constraint firstItem="LGn-i2-i5b" firstAttribute="bottom" secondItem="yqT-zl-unB" secondAttribute="bottom" id="B5U-2h-eCP"/>
-                            <constraint firstItem="LGn-i2-i5b" firstAttribute="trailing" secondItem="yqT-zl-unB" secondAttribute="trailing" id="YPY-mw-AVm"/>
-                            <constraint firstItem="yqT-zl-unB" firstAttribute="leading" secondItem="LGn-i2-i5b" secondAttribute="leading" id="y5o-9P-a1i"/>
+                            <constraint firstItem="yqT-zl-unB" firstAttribute="top" secondItem="rCb-8x-LRP" secondAttribute="top" id="6OX-Uu-BpW"/>
+                            <constraint firstAttribute="bottom" secondItem="yqT-zl-unB" secondAttribute="bottom" id="B5U-2h-eCP"/>
+                            <constraint firstAttribute="trailing" secondItem="yqT-zl-unB" secondAttribute="trailing" id="YPY-mw-AVm"/>
+                            <constraint firstAttribute="trailing" secondItem="p05-d0-Dku" secondAttribute="trailing" constant="20" id="jaS-CY-kxL"/>
+                            <constraint firstAttribute="bottom" secondItem="p05-d0-Dku" secondAttribute="bottom" constant="46" id="rqw-gT-dhh"/>
+                            <constraint firstItem="yqT-zl-unB" firstAttribute="leading" secondItem="rCb-8x-LRP" secondAttribute="leading" id="y5o-9P-a1i"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="LGn-i2-i5b"/>
+                        <viewLayoutGuide key="safeArea" id="IFe-Nb-cnI"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Profile" image="profile" selectedImage="profile" id="fEC-M4-U17"/>
+                    <tabBarItem key="tabBarItem" title="" image="profile" selectedImage="profile" id="fEC-M4-U17"/>
                     <navigationItem key="navigationItem" title="Profile" id="I6D-gf-niJ"/>
                     <connections>
                         <outlet property="profile" destination="yqT-zl-unB" id="myg-KO-8UF"/>
@@ -221,7 +224,7 @@
         <!--Feed-->
         <scene sceneID="FPC-4W-xoz">
             <objects>
-                <viewController storyboardIdentifier="FeedViewController" id="LeC-Qy-HKc" customClass="FeedViewController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FeedViewController" automaticallyAdjustsScrollViewInsets="NO" id="LeC-Qy-HKc" customClass="FeedViewController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SlS-3f-Mx0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
