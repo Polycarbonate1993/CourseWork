@@ -23,7 +23,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="343"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="767" verticalCompressionResistancePriority="759" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZNr-rC-8Qu" userLabel="Avatar">
-                            <rect key="frame" x="172" y="40" width="70" height="70"/>
+                            <rect key="frame" x="172" y="60" width="70" height="70"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="ZNr-rC-8Qu" secondAttribute="height" multiplier="1:1" id="Ixh-jX-GWp"/>
                                 <constraint firstAttribute="width" constant="70" id="JIP-F2-l96"/>
@@ -31,7 +31,7 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Upd-dc-08b" userLabel="FullName">
-                            <rect key="frame" x="186" y="125" width="42.5" height="20"/>
+                            <rect key="frame" x="186" y="145" width="42.5" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="20" id="B97-vT-uGp"/>
                             </constraints>
@@ -39,37 +39,46 @@
                             <color key="textColor" name="profileInfo"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jd7-aM-HNF" userLabel="Followers">
-                            <rect key="frame" x="136" y="367" width="11" height="20"/>
+                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jd7-aM-HNF" userLabel="Followers">
+                            <rect key="frame" x="136" y="362" width="11" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="20" id="ygh-dC-cPK"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                            <color key="textColor" name="label"/>
+                            <attributedString key="attributedText">
+                                <fragment content="0">
+                                    <attributes>
+                                        <color key="NSColor" red="0.49441762500000003" green="0.67654899499999999" blue="0.50386217460000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <font key="NSFont" size="17" name="Rockwell-Bold"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineHeightMultiple="1.5" tighteningFactorForTruncation="0.0"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
                             <nil key="highlightedColor"/>
-                            <color key="shadowColor" white="0.0" alpha="0.31" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <size key="shadowOffset" width="1.5" height="1.5"/>
+                            <size key="shadowOffset" width="0.0" height="0.0"/>
                         </label>
-                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d3-ah-u8J" userLabel="Following">
-                            <rect key="frame" x="329" y="367" width="11" height="20"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="20" id="I7D-e3-ZGa"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                            <color key="textColor" name="label"/>
+                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d3-ah-u8J" userLabel="Following">
+                            <rect key="frame" x="329" y="359.5" width="11" height="25.5"/>
+                            <attributedString key="attributedText">
+                                <fragment content="0">
+                                    <attributes>
+                                        <color key="NSColor" red="0.49441762500000003" green="0.67654899499999999" blue="0.50386217460000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <font key="NSFont" size="17" name="Rockwell-Bold"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineHeightMultiple="1.5" tighteningFactorForTruncation="0.0"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
                             <nil key="highlightedColor"/>
-                            <color key="shadowColor" white="0.0" alpha="0.30706870719178081" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <size key="shadowOffset" width="1.5" height="1.5"/>
+                            <size key="shadowOffset" width="0.0" height="0.0"/>
                         </label>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F46-Dq-ZFo">
-                            <rect key="frame" x="364" y="15" width="35" height="35"/>
+                            <rect key="frame" x="359" y="40" width="35" height="35"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="F46-Dq-ZFo" secondAttribute="height" id="BMn-NP-qkG"/>
                                 <constraint firstAttribute="height" constant="35" id="uux-IC-01N"/>
                             </constraints>
                             <color key="tintColor" name="liked"/>
                             <inset key="contentEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
-                            <state key="normal" image="person.badge.plus.fill" catalog="system">
+                            <state key="normal" image="add-user">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -89,13 +98,13 @@
                             <color key="selectedSegmentTintColor" name="background"/>
                         </segmentedControl>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fml-e4-DTB">
-                            <rect key="frame" x="189" y="145" width="36" height="17"/>
+                            <rect key="frame" x="189" y="165" width="36" height="17"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                             <color key="textColor" name="profileInfo"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="745" verticalCompressionResistancePriority="745" scrollEnabled="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mM0-bL-Q86">
-                            <rect key="frame" x="30" y="170" width="354" height="143"/>
+                        <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="745" verticalCompressionResistancePriority="745" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mM0-bL-Q86">
+                            <rect key="frame" x="30" y="190" width="354" height="123"/>
                             <attributedString key="attributedText">
                                 <fragment>
                                     <string key="content">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
@@ -113,7 +122,7 @@
                                 <constraint firstAttribute="width" secondItem="ZdG-in-Bsf" secondAttribute="height" id="5LF-rq-7rL"/>
                                 <constraint firstAttribute="height" constant="30" id="ysN-K3-nRR"/>
                             </constraints>
-                            <color key="tintColor" name="liked"/>
+                            <color key="tintColor" name="followers"/>
                             <state key="normal" image="follower">
                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -124,6 +133,7 @@
                                 <constraint firstAttribute="height" constant="30" id="4ay-UB-RSL"/>
                                 <constraint firstAttribute="width" secondItem="GcO-HG-gG7" secondAttribute="height" id="nzZ-GK-uPc"/>
                             </constraints>
+                            <color key="tintColor" name="followers"/>
                             <state key="normal" image="following"/>
                         </button>
                     </subviews>
@@ -133,31 +143,31 @@
                         <constraint firstItem="Upd-dc-08b" firstAttribute="top" secondItem="ZNr-rC-8Qu" secondAttribute="bottom" constant="15" id="4Gv-fh-3YI"/>
                         <constraint firstAttribute="trailing" secondItem="vZe-t7-eNv" secondAttribute="trailing" constant="15" id="4hm-vE-dKa"/>
                         <constraint firstItem="fml-e4-DTB" firstAttribute="top" secondItem="Upd-dc-08b" secondAttribute="bottom" id="4wf-sS-s56"/>
+                        <constraint firstItem="jd7-aM-HNF" firstAttribute="centerY" secondItem="ZdG-in-Bsf" secondAttribute="centerY" id="5yU-7H-EbG"/>
                         <constraint firstItem="9dx-X1-xm4" firstAttribute="top" secondItem="FOL-hi-e85" secondAttribute="top" id="7cj-sc-AH4"/>
                         <constraint firstItem="9dx-X1-xm4" firstAttribute="trailing" secondItem="FOL-hi-e85" secondAttribute="trailing" id="7r7-sW-ZlQ"/>
                         <constraint firstItem="fml-e4-DTB" firstAttribute="centerX" secondItem="5nZ-VV-ZXg" secondAttribute="centerX" id="8kh-dF-Kna"/>
                         <constraint firstItem="ZdG-in-Bsf" firstAttribute="leading" secondItem="5nZ-VV-ZXg" secondAttribute="leading" constant="96" id="B5C-5x-K9f"/>
-                        <constraint firstItem="F46-Dq-ZFo" firstAttribute="top" secondItem="5nZ-VV-ZXg" secondAttribute="top" constant="15" id="Bil-Fh-7DS"/>
-                        <constraint firstItem="4d3-ah-u8J" firstAttribute="top" secondItem="9dx-X1-xm4" secondAttribute="bottom" constant="24" id="D5U-3Y-j9Y"/>
+                        <constraint firstItem="GcO-HG-gG7" firstAttribute="top" secondItem="FOL-hi-e85" secondAttribute="bottom" constant="14" id="BVg-Lv-mcd"/>
+                        <constraint firstItem="F46-Dq-ZFo" firstAttribute="top" secondItem="5nZ-VV-ZXg" secondAttribute="top" constant="40" id="Bil-Fh-7DS"/>
                         <constraint firstAttribute="trailing" secondItem="GcO-HG-gG7" secondAttribute="trailing" constant="95" id="DNA-lq-VXe"/>
-                        <constraint firstItem="jd7-aM-HNF" firstAttribute="top" secondItem="FOL-hi-e85" secondAttribute="bottom" constant="24" id="Dvh-7m-vXs"/>
-                        <constraint firstItem="ZNr-rC-8Qu" firstAttribute="top" secondItem="5nZ-VV-ZXg" secondAttribute="top" constant="40" id="FAt-U4-mZA"/>
+                        <constraint firstItem="ZNr-rC-8Qu" firstAttribute="top" secondItem="5nZ-VV-ZXg" secondAttribute="top" constant="60" id="FAt-U4-mZA"/>
                         <constraint firstItem="vZe-t7-eNv" firstAttribute="top" secondItem="GcO-HG-gG7" secondAttribute="bottom" constant="8" id="K6g-hf-tEN"/>
+                        <constraint firstItem="ZdG-in-Bsf" firstAttribute="top" secondItem="FOL-hi-e85" secondAttribute="bottom" constant="14" id="LGm-4p-OyP"/>
                         <constraint firstItem="Upd-dc-08b" firstAttribute="centerX" secondItem="5nZ-VV-ZXg" secondAttribute="centerX" id="NO5-VI-Jjs"/>
                         <constraint firstItem="FOL-hi-e85" firstAttribute="top" secondItem="5nZ-VV-ZXg" secondAttribute="top" id="Nyq-WX-zX8"/>
                         <constraint firstItem="9dx-X1-xm4" firstAttribute="bottom" secondItem="FOL-hi-e85" secondAttribute="bottom" id="Pcl-wO-RVn"/>
                         <constraint firstItem="FOL-hi-e85" firstAttribute="bottom" secondItem="mM0-bL-Q86" secondAttribute="bottom" constant="30" id="Q0A-bH-CB7"/>
                         <constraint firstItem="mM0-bL-Q86" firstAttribute="leading" secondItem="5nZ-VV-ZXg" secondAttribute="leading" constant="30" id="UmY-hP-Te4"/>
                         <constraint firstItem="mM0-bL-Q86" firstAttribute="top" secondItem="fml-e4-DTB" secondAttribute="bottom" constant="8" id="ZNg-nh-x7J"/>
-                        <constraint firstItem="vZe-t7-eNv" firstAttribute="top" secondItem="4d3-ah-u8J" secondAttribute="bottom" constant="8" id="Zm2-iF-dqb"/>
+                        <constraint firstItem="4d3-ah-u8J" firstAttribute="centerY" secondItem="GcO-HG-gG7" secondAttribute="centerY" id="bsY-IP-bhC"/>
                         <constraint firstItem="9dx-X1-xm4" firstAttribute="leading" secondItem="FOL-hi-e85" secondAttribute="leading" id="eo6-P4-kO4"/>
                         <constraint firstItem="jd7-aM-HNF" firstAttribute="leading" secondItem="ZdG-in-Bsf" secondAttribute="trailing" constant="10" id="jvR-dF-ZGU"/>
-                        <constraint firstItem="vZe-t7-eNv" firstAttribute="top" secondItem="jd7-aM-HNF" secondAttribute="bottom" constant="8" id="kl0-Jg-tEk"/>
                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="300" id="mcR-mj-Mjq"/>
                         <constraint firstItem="ZNr-rC-8Qu" firstAttribute="centerX" secondItem="5nZ-VV-ZXg" secondAttribute="centerX" id="nsF-0V-8vP"/>
                         <constraint firstItem="FOL-hi-e85" firstAttribute="leading" secondItem="5nZ-VV-ZXg" secondAttribute="leading" id="pqG-Cd-GyF"/>
                         <constraint firstItem="vZe-t7-eNv" firstAttribute="leading" secondItem="5nZ-VV-ZXg" secondAttribute="leading" constant="15" id="q6z-J0-bzO"/>
-                        <constraint firstAttribute="trailing" secondItem="F46-Dq-ZFo" secondAttribute="trailing" constant="15" id="tDC-Er-u9E"/>
+                        <constraint firstAttribute="trailing" secondItem="F46-Dq-ZFo" secondAttribute="trailing" constant="20" id="tDC-Er-u9E"/>
                         <constraint firstItem="4d3-ah-u8J" firstAttribute="leading" secondItem="GcO-HG-gG7" secondAttribute="trailing" constant="10" id="uSA-8m-MoW"/>
                         <constraint firstItem="vZe-t7-eNv" firstAttribute="top" secondItem="ZdG-in-Bsf" secondAttribute="bottom" constant="8" id="wq6-Px-hro"/>
                         <constraint firstAttribute="trailing" secondItem="mM0-bL-Q86" secondAttribute="trailing" constant="30" id="xxR-Sv-hDD"/>
@@ -188,20 +198,20 @@
         </collectionReusableView>
     </objects>
     <resources>
+        <image name="add-user" width="512" height="512"/>
         <image name="follower" width="512" height="512"/>
         <image name="following" width="512" height="512"/>
-        <image name="person.badge.plus.fill" catalog="system" width="128" height="116"/>
         <namedColor name="background">
             <color red="0.80000001192092896" green="0.9179999828338623" blue="0.62699997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="label">
-            <color red="0.17299999296665192" green="0.37299999594688416" blue="0.17599999904632568" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="followers">
+            <color red="0.49399998784065247" green="0.67699998617172241" blue="0.50400000810623169" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="liked">
             <color red="1" green="0.0" blue="0.36300000548362732" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="profileInfo">
-            <color red="0.942915599151678" green="0.98446542020000005" blue="0.71679373778445954" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94300001859664917" green="0.98400002717971802" blue="0.71700000762939453" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

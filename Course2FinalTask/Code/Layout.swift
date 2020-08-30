@@ -72,7 +72,6 @@ class PinterestLayout: UICollectionViewLayout {
             let height = columnWidth / aspectRatio
             let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
             let insetFrame = frame.insetBy(dx: cellPadding, dy: cellPadding)
-//            print("size: \(frame.size) origin: \(frame.origin), insetBy size: \(insetFrame.size) origin: \(insetFrame.origin)")
       // 5
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = frame
@@ -110,4 +109,7 @@ class PinterestLayout: UICollectionViewLayout {
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return cacheForSupplementaryView.isEmpty ? nil : cacheForSupplementaryView[indexPath.item]
     }
+//    override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
+//        <#code#>
+//    }
 }

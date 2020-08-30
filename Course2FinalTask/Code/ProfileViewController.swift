@@ -24,28 +24,25 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         didSet {
             newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: true, range: .limit(40), completionHandler: {result in
                 self.userPosts = result
-                result.forEach({_ in
+                result.forEach({item in
                     self.dispatchGroup.enter()
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
                 })
                 self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
-                    print("notified")
-                    (self.profile.collectionViewLayout as! PinterestLayout).invalidateLayout()
-                })
-                DispatchQueue.main.async {
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
-                        print("reload completed")
-//                        (self.profile.collectionViewLayout as! PinterestLayout).invalidateLayout()
+                        self.profile.collectionViewLayout.invalidateLayout()
                     })
-                    print("reloading")
                     self.profile.reloadData()
                     CATransaction.commit()
-                }
-                
+                })
             })
         }
     }
-    var userPosts:[Status] = []
+    var concurrentFetchinPosts: [Status] = []
+    var userPosts: [Status] = []
     var indexForRow: IndexPath?
 
     // MARK: - View configuration
@@ -64,6 +61,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         if let layout = profile.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
+        profile.prefetchDataSource = self
         profile.dataSource = self
         profile.delegate = self
         profile.register(UINib(nibName: "ProfileCell", bundle: nil), forCellWithReuseIdentifier: "ProfileSample")
@@ -82,7 +80,9 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
 //    }
     
     override func viewDidAppear(_ animated: Bool) {
-        
+        newAPIHandler.getUser(withID: "5168", completionHandler: {result in
+            self.user = result
+        })
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -98,11 +98,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     
     @objc func logOut() {
     }
-    @IBAction func button(_ sender: UIButton) {
-        newAPIHandler.getUser(withID: NewAPIHandler.currentUserID ?? "", completionHandler: {result in
-            self.user = result
-        })
-    }
     
     // MARK: - UICollectionViewDataSource
 
@@ -116,14 +111,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: indexPath) as! ProfileCell
-        cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[indexPath.item].mediaAttachments[0].previewURL)!, cacheKey: userPosts[indexPath.item].mediaAttachments[0].previewURL), completionHandler: {result in
-            switch result {
-            case .success(let resultObject):
-                self.dispatchGroup.leave()
-            case .failure(let error):
-                print("error: \(error.errorDescription)")
-            }
-        })
+        cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[indexPath.item].mediaAttachments[0].previewURL)!, cacheKey: userPosts[indexPath.item].mediaAttachments[0].previewURL))
         return cell
     }
 
@@ -227,13 +215,28 @@ extension ProfileViewController: HeaderDelegate {
 extension ProfileViewController: PinterestLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, sizeForPhotoAtIndexPath indexPath: IndexPath) -> CGSize {
 
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCell, let size = cell.mainImage?.image?.size else {
             print(0)
-            return CGSize(width: 1, height: 1)
-        }
-        guard let size = cell.mainImage?.image?.size else {
-            print(1)
-            return CGSize(width: 1, height: 1)
+            var retrievedImage: UIImage?
+            dispatchGroup.enter()
+            ImageCache.default.retrieveImage(forKey: userPosts[indexPath.item].mediaAttachments[0].previewURL, completionHandler: {result in
+                switch result {
+                case .success(let imageCache):
+                    switch imageCache {
+                    case .disk(let image):
+                        retrievedImage = image
+                    case .memory(let image):
+                        retrievedImage = image
+                    default:
+                        break
+                    }
+                case .failure(let error):
+                    self.generateAlert(title: "Retrieving image error", message: error.errorDescription ?? "smth else", buttonTitle: "OK")
+                }
+                self.dispatchGroup.leave()
+            })
+            dispatchGroup.wait()
+            return retrievedImage != nil ? retrievedImage!.size : CGSize(width: 1, height: 1)
         }
         print("cell size: \(size)")
         return size
@@ -247,13 +250,26 @@ extension ProfileViewController: PinterestLayoutDelegate {
         let calculatedHeightOfFullName = supplementaryView.fullName.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
         let calculatedHeightOfUsername = supplementaryView.username.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
         let calculatedHeightOfNote = supplementaryView.note.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let calculatedHeightOfFollowers = supplementaryView.followers.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
         let calculatedHeightOfSegmentedControl = supplementaryView.postsOrMediaSegmentedControl.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let totalSize = calculatedHeightOfAvatar + calculatedHeightOfFullName + calculatedHeightOfUsername + calculatedHeightOfNote + calculatedHeightOfFollowers + calculatedHeightOfSegmentedControl
-        let size = CGSize(width: collectionView.frame.width, height: totalSize + 140)
-        print("size: \(size), heights: avatar - \(supplementaryView.avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)), fullname - \(supplementaryView.fullName.frame.size.height)")
-        print("main view size: \(supplementaryView.mainView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))")
+        let totalSize = calculatedHeightOfAvatar + calculatedHeightOfFullName + calculatedHeightOfUsername + calculatedHeightOfNote + 20 + calculatedHeightOfSegmentedControl
+        let size = CGSize(width: collectionView.frame.width, height: totalSize + 160)
         return size
+    }
+}
+
+extension ProfileViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+//        for item in indexPaths {
+//            dispatchGroup.enter()
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: item) as! ProfileCell
+//            cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[item.item].mediaAttachments[0].previewURL)!, cacheKey: userPosts[item.item].mediaAttachments[0].previewURL), completionHandler: {result in
+//                self.dispatchGroup.leave()
+//            })
+//        }
+//        dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+//            self.profile.collectionViewLayout.invalidateLayout()
+//        })
+//
     }
 }
 

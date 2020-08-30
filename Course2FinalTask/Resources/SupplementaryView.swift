@@ -31,14 +31,11 @@ class SupplementaryView: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         filler.backgroundColor = UIColor(white: 0.2, alpha: 0.6)
-        followers.layer.cornerRadius = followers.layer.bounds.height / 2
-        followers.layer.borderWidth = 2
-        followers.layer.borderColor = UIColor(named: "label")?.cgColor
-        following.layer.cornerRadius = following.layer.bounds.height / 2
-        following.layer.borderWidth = 2
-        following.layer.borderColor = UIColor(named: "label")?.cgColor
         avatar.layer.cornerRadius = avatar.layer.bounds.width / 2
-//        avatar.layer.masksToBounds = true
+        self.layer.masksToBounds = false
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOpacity = 0.6
+        self.layer.shadowOffset = CGSize(width: 2, height: 2)
         followers.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toTableView)))
         following.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toTableView)))
         followButton.isHidden = true
@@ -56,11 +53,17 @@ class SupplementaryView: UICollectionReusableView {
                 switch result {
                 case .success(let relationship, _):
                     if relationship[0].following {
-                        self.followButton.setImage(UIImage(named: "person.badge.minus.fill"), for: .normal)
-                        self.followButton.tintColor = UIColor(named: "liked")
+                        DispatchQueue.main.async {
+                            self.followButton.setImage(UIImage(named: "add-user"), for: .normal)
+                            self.followButton.tintColor = UIColor(named: "liked")
+                            self.followButton.isHidden = false
+                        }
                     } else {
-                        self.followButton.setImage(UIImage(named: "person.badge.plus.fill"), for: .normal)
-                        self.followButton.tintColor = UIColor(named: "unliked")
+                        DispatchQueue.main.async {
+                            self.followButton.setImage(UIImage(named: "remove-user"), for: .normal)
+                            self.followButton.tintColor = UIColor(named: "unliked")
+                            self.followButton.isHidden = false
+                        }
                     }
                 case .failure(let error):
                     print("error: \(error.asOAuth2Error.description)")
@@ -80,8 +83,20 @@ class SupplementaryView: UICollectionReusableView {
             note.attributedText = nil
         }
         fullName.text = user.displayName
-        followers.text = "Followers: \(user.followersCount)"
-        following.text = "Following: \(user.followingCount)"
+        switch user.followersCount > 9999 {
+        case true:
+            if user.followersCount > 999999 {
+                let decimalPoint = user.followersCount / 100000
+                let final = CGFloat(decimalPoint) / 10
+                followers.text = "\(final)M+"
+            } else {
+                followers.text = "\(user.followersCount / 1000)K+"
+            }
+        case false:
+            followers.text = "\(user.followersCount)"
+        }
+        followers.text = "\(user.followersCount)"
+        following.text = "\(user.followingCount)"
     }
 
     // MARK: - Actions handling

@@ -174,21 +174,12 @@
                                 <collectionViewLayout key="collectionViewLayout" id="gn7-8f-uuI" customClass="PinterestLayout" customModule="Course2FinalTask" customModuleProvider="target"/>
                                 <cells/>
                             </collectionView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p05-d0-Dku">
-                                <rect key="frame" x="348" y="820" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="button:" destination="or8-0J-siA" eventType="touchUpInside" id="gSz-5F-7aH"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="yqT-zl-unB" firstAttribute="top" secondItem="rCb-8x-LRP" secondAttribute="top" id="6OX-Uu-BpW"/>
                             <constraint firstAttribute="bottom" secondItem="yqT-zl-unB" secondAttribute="bottom" id="B5U-2h-eCP"/>
                             <constraint firstAttribute="trailing" secondItem="yqT-zl-unB" secondAttribute="trailing" id="YPY-mw-AVm"/>
-                            <constraint firstAttribute="trailing" secondItem="p05-d0-Dku" secondAttribute="trailing" constant="20" id="jaS-CY-kxL"/>
-                            <constraint firstAttribute="bottom" secondItem="p05-d0-Dku" secondAttribute="bottom" constant="46" id="rqw-gT-dhh"/>
                             <constraint firstItem="yqT-zl-unB" firstAttribute="leading" secondItem="rCb-8x-LRP" secondAttribute="leading" id="y5o-9P-a1i"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="IFe-Nb-cnI"/>
