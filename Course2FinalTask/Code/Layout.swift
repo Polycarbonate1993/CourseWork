@@ -11,7 +11,7 @@ import UIKit
 
 protocol PinterestLayoutDelegate: AnyObject {
     func collectionView(_ collectionView: UICollectionView, sizeForPhotoAtIndexPath indexPath: IndexPath) -> CGSize
-    func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize
+    func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize?
 }
 
 class PinterestLayout: UICollectionViewLayout {
@@ -51,16 +51,19 @@ class PinterestLayout: UICollectionViewLayout {
         cacheForSupplementaryView = []
         cache = []
     // 2
-        let supplementaryAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "Header", with: IndexPath(item: 0, section: 0))
-        supplementaryAttributes.frame = CGRect(x: 0, y: 0, width: contentWidth, height: delegate?.collectionView(collectionView, kind: "Header", sizeForTextAtIndexPath: IndexPath(item: 0, section: 0)).height ?? 100)
-        cacheForSupplementaryView.append(supplementaryAttributes)
+        if let supplementaryViewHeight = delegate?.collectionView(collectionView, kind: "Header", sizeForTextAtIndexPath: IndexPath(item: 0, section: 0))?.height {
+            let supplementaryAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "Header", with: IndexPath(item: 0, section: 0))
+            supplementaryAttributes.frame = CGRect(x: 0, y: 0, width: contentWidth, height: delegate?.collectionView(collectionView, kind: "Header", sizeForTextAtIndexPath: IndexPath(item: 0, section: 0))?.height ?? 100)
+            cacheForSupplementaryView.append(supplementaryAttributes)
+        }
+        
         let columnWidth = (contentWidth - cellPadding * CGFloat(numberOfColumns + 1)) / CGFloat(numberOfColumns)
         var xOffset: [CGFloat] = []
         for column in 0..<numberOfColumns {
             xOffset.append(CGFloat(column) * columnWidth + cellPadding * (CGFloat(column) + 1))
         }
         var column = 0
-        var yOffset: [CGFloat] = .init(repeating: supplementaryAttributes.frame.height + cellPadding, count: numberOfColumns)
+        var yOffset: [CGFloat] = .init(repeating: (cacheForSupplementaryView.isEmpty ? 0 : cacheForSupplementaryView[0].frame.height) + cellPadding, count: numberOfColumns)
       
     // 3
         for item in 0..<collectionView.numberOfItems(inSection: 0) {
@@ -109,7 +112,4 @@ class PinterestLayout: UICollectionViewLayout {
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return cacheForSupplementaryView.isEmpty ? nil : cacheForSupplementaryView[indexPath.item]
     }
-//    override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
-//        <#code#>
-//    }
 }

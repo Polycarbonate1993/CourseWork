@@ -15,6 +15,7 @@
 		AF287E7324A8FCA700D28920 /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF287E7224A8FCA700D28920 /* Kingfisher.framework */; };
 		AF287E7424A8FCA700D28920 /* Kingfisher.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AF287E7224A8FCA700D28920 /* Kingfisher.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AF4835C224AB8C9500A3E84F /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF4835C124AB8C9500A3E84F /* Media.xcassets */; };
+		AF49A40624FB6F6700FB9919 /* RoundedSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF49A40524FB6F6700FB9919 /* RoundedSegmentedControl.swift */; };
 		AF7C1ED924F884BF0025316C /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7C1ED824F884BF0025316C /* Layout.swift */; };
 		AF7DD293244FC335009FD0F4 /* UsersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7DD292244FC335009FD0F4 /* UsersTableViewController.swift */; };
 		AF7DD29624504172009FD0F4 /* UsersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7DD29424504172009FD0F4 /* UsersTableViewCell.swift */; };
@@ -77,6 +78,7 @@
 		AF1295F724A603A1002FD7CF /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		AF287E7224A8FCA700D28920 /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 		AF4835C124AB8C9500A3E84F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		AF49A40524FB6F6700FB9919 /* RoundedSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedSegmentedControl.swift; sourceTree = "<group>"; };
 		AF7C1ED824F884BF0025316C /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		AF7DD292244FC335009FD0F4 /* UsersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersTableViewController.swift; sourceTree = "<group>"; };
 		AF7DD29424504172009FD0F4 /* UsersTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersTableViewCell.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 				AFD9F4CE24F43AB00055442C /* FeedCellWithoutContent.xib */,
 				AF871119244E9E1500F20B53 /* SupplementaryView.swift */,
 				AF87111A244E9E1500F20B53 /* SupplementaryView.xib */,
+				AF49A40524FB6F6700FB9919 /* RoundedSegmentedControl.swift */,
 				AF87111D244EA81300F20B53 /* ProfileCell.swift */,
 				AF87111E244EA81300F20B53 /* ProfileCell.xib */,
 				AF7DD29424504172009FD0F4 /* UsersTableViewCell.swift */,
@@ -372,6 +375,7 @@
 				AF87111B244E9E1500F20B53 /* SupplementaryView.swift in Sources */,
 				AFB16EBA247C655600C22EC2 /* FilterCell.swift in Sources */,
 				AF1295F824A603A1002FD7CF /* Model.swift in Sources */,
+				AF49A40624FB6F6700FB9919 /* RoundedSegmentedControl.swift in Sources */,
 				AF8AF8342451A88900DB203F /* NavigationController.swift in Sources */,
 				AF87111F244EA81300F20B53 /* ProfileCell.swift in Sources */,
 				AF871118244E923C00F20B53 /* ProfileViewController.swift in Sources */,

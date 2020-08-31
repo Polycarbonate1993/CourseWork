@@ -241,19 +241,20 @@ extension ProfileViewController: PinterestLayoutDelegate {
         print("cell size: \(size)")
         return size
     }
-    func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize {
-        guard let supplementaryView = collectionView.supplementaryView(forElementKind: kind, at: indexPath) as? SupplementaryView else {
-            print(2)
-            return CGSize(width: collectionView.frame.width, height: 201)
-        }
-        let calculatedHeightOfAvatar = supplementaryView.avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let calculatedHeightOfFullName = supplementaryView.fullName.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let calculatedHeightOfUsername = supplementaryView.username.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let calculatedHeightOfNote = supplementaryView.note.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let calculatedHeightOfSegmentedControl = supplementaryView.postsOrMediaSegmentedControl.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        let totalSize = calculatedHeightOfAvatar + calculatedHeightOfFullName + calculatedHeightOfUsername + calculatedHeightOfNote + 20 + calculatedHeightOfSegmentedControl
-        let size = CGSize(width: collectionView.frame.width, height: totalSize + 160)
-        return size
+    func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize? {
+//        guard let supplementaryView = collectionView.supplementaryView(forElementKind: kind, at: indexPath) as? SupplementaryView else {
+//            print(2)
+//            return CGSize(width: collectionView.frame.width, height: 201)
+//        }
+//        let calculatedHeightOfAvatar = supplementaryView.avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        let calculatedHeightOfFullName = supplementaryView.fullName.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        let calculatedHeightOfUsername = supplementaryView.username.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        let calculatedHeightOfNote = supplementaryView.note.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        let calculatedHeightOfSegmentedControl = supplementaryView.postsOrMediaSegmentedControl?.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height ?? CGFloat(31)
+//        let totalSize = calculatedHeightOfAvatar + calculatedHeightOfFullName + calculatedHeightOfUsername + calculatedHeightOfNote + 20 + calculatedHeightOfSegmentedControl
+//        let size = CGSize(width: collectionView.frame.width, height: totalSize + 160)
+//        return size
+        return nil
     }
 }
 

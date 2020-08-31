@@ -56,8 +56,7 @@ class FeedCell: UICollectionViewCell {
         username.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         likes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toLikes)))
         self.contentView.layer.cornerRadius = contentView.bounds.size.width / 10
-        self.contentView.layer.masksToBounds = true
-        self.layer.masksToBounds = false
+        
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.6
         self.layer.shadowOffset = CGSize(width: 2, height: 2)
@@ -69,6 +68,7 @@ class FeedCell: UICollectionViewCell {
         guard let status = post else {
             return
         }
+        
         avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: status.account.avatar)!, cacheKey: status.account.avatar))
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .long

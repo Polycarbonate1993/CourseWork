@@ -22,7 +22,7 @@ class SupplementaryView: UICollectionReusableView {
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var note: UITextView!
     @IBOutlet weak var headerImage: UIImageView!
-    @IBOutlet weak var postsOrMediaSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var postsOrMediaSegmentedControl: RoundedSegmentedControl!
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var filler: UIImageView!
     var user: Account!
@@ -41,8 +41,11 @@ class SupplementaryView: UICollectionReusableView {
         followButton.isHidden = true
         mainView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         mainView.layer.cornerRadius = mainView.bounds.size.width / 10
+        postsOrMediaSegmentedControl.draw(postsOrMediaSegmentedControl.frame)
     }
     
+    @IBAction func postMediaTapped(_ sender: RoundedSegmentedControl) {
+    }
     func fill() {
         guard let user = user else {
             return
