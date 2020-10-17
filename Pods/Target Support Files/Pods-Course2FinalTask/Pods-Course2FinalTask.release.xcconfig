@@ -1,13 +1,13 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/SwiftyGif"
-LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nuke" "${PODS_CONFIGURATION_BUILD_DIR}/Streamoji" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif"
-OTHER_CFLAGS = $(inherited) -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Nuke/Nuke.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Streamoji/Streamoji.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif/SwiftyGif.modulemap"
-OTHER_LDFLAGS = $(inherited) -ObjC -l"Nuke" -l"Streamoji" -l"SwiftyGif"
-OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Nuke/Nuke.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Streamoji/Streamoji.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif/SwiftyGif.modulemap"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Kingfisher" "${PODS_ROOT}/Headers/Public/SwiftyGif"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Kingfisher" "${PODS_CONFIGURATION_BUILD_DIR}/Nuke" "${PODS_CONFIGURATION_BUILD_DIR}/Streamoji" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif" "${PODS_CONFIGURATION_BUILD_DIR}/p2.OAuth2"
+OTHER_CFLAGS = $(inherited) -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Kingfisher/Kingfisher.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Nuke/Nuke.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Streamoji/Streamoji.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif/SwiftyGif.modulemap" -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/p2.OAuth2/p2_OAuth2.modulemap"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"Kingfisher" -l"Nuke" -l"Streamoji" -l"SwiftyGif" -l"p2.OAuth2" -framework "Accelerate" -framework "CFNetwork" -framework "SafariServices"
+OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Kingfisher/Kingfisher.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Nuke/Nuke.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Streamoji/Streamoji.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif/SwiftyGif.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/p2.OAuth2/p2_OAuth2.modulemap"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
 PODS_ROOT = ${SRCROOT}/Pods
-SWIFT_INCLUDE_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Nuke" "${PODS_CONFIGURATION_BUILD_DIR}/Streamoji" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif"
+SWIFT_INCLUDE_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Kingfisher" "${PODS_CONFIGURATION_BUILD_DIR}/Nuke" "${PODS_CONFIGURATION_BUILD_DIR}/Streamoji" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif" "${PODS_CONFIGURATION_BUILD_DIR}/p2.OAuth2"
 USE_RECURSIVE_SCRIPT_INPUTS_IN_SCRIPT_PHASES = YES

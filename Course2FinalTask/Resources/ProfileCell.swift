@@ -22,15 +22,15 @@ class ProfileCell: UICollectionViewCell {
         self.layer.shadowOffset = CGSize(width: 2, height: 2)
     }
     
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let newLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-        setNeedsLayout()
-        layoutIfNeeded()
-//        let newLayoutAttributes = layoutAttributes
-        newLayoutAttributes.size.width = UIScreen.main.bounds.width / 2
-        let aspectRatio = mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        newLayoutAttributes.size.height = (UIScreen.main.bounds.width / 3) / aspectRatio
-        print("blah blah")
-        return newLayoutAttributes
-    }
+//    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+//        let newLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+//        setNeedsLayout()
+//        layoutIfNeeded()
+////        let newLayoutAttributes = layoutAttributes
+//        newLayoutAttributes.size.width = UIScreen.main.bounds.width / 2
+//        let aspectRatio = mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        newLayoutAttributes.size.height = (UIScreen.main.bounds.width / 3) / aspectRatio
+//        print("blah blah")
+//        return newLayoutAttributes
+//    }
 }

@@ -18,31 +18,31 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZIA-jk-sE5">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="669"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fi2-Ir-4Hl" userLabel="Avatar">
+                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="Fi2-Ir-4Hl" userLabel="Avatar">
                                 <rect key="frame" x="15" y="15" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="9NO-pw-kVV"/>
                                     <constraint firstAttribute="height" constant="50" id="RMt-wN-WOd"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7o-q6-gC8" userLabel="Username">
-                                <rect key="frame" x="115" y="15.5" width="32.5" height="16"/>
+                            <label opaque="NO" contentMode="left" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7o-q6-gC8" userLabel="Username">
+                                <rect key="frame" x="115" y="23.5" width="32.5" height="16"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="13"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zN0-67-zDn" userLabel="Date">
-                                <rect key="frame" x="73" y="32" width="35.5" height="33"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zN0-67-zDn" userLabel="Date">
+                                <rect key="frame" x="73" y="48" width="35.5" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="999" verticalHuggingPriority="999" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GLT-ML-NO1" userLabel="Image">
+                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GLT-ML-NO1" userLabel="Image">
                                 <rect key="frame" x="0.0" y="77" width="414" height="392"/>
                                 <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vvk-1x-1tV" userLabel="Like">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vvk-1x-1tV" userLabel="Like">
                                 <rect key="frame" x="355" y="469.5" width="44" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="KQZ-5z-kzL"/>
@@ -56,7 +56,7 @@
                                     <action selector="tappedLikeButton:" destination="gTV-IL-0wX" eventType="touchUpInside" id="Toc-Ks-aXX"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gh1-Vf-8vc" userLabel="Likes">
+                            <label opaque="NO" contentMode="left" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gh1-Vf-8vc" userLabel="Likes">
                                 <rect key="frame" x="15" y="483" width="35.5" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="17" id="bDP-c6-MW1"/>
@@ -68,7 +68,7 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bigLike" translatesAutoresizingMaskIntoConstraints="NO" id="H6z-yY-9Mm">
                                 <rect key="frame" x="157" y="223" width="100" height="100"/>
                             </imageView>
-                            <textView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" scrollEnabled="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Gy-8y-U8B">
+                            <textView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" scrollEnabled="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Gy-8y-U8B">
                                 <rect key="frame" x="15" y="500" width="384" height="161"/>
                                 <attributedString key="attributedText">
                                     <fragment>
@@ -83,8 +83,8 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                 <dataDetectorType key="dataDetectorTypes" link="YES"/>
                             </textView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vMD-nx-7wU">
-                                <rect key="frame" x="73" y="15" width="37" height="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1" verticalHuggingPriority="1" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vMD-nx-7wU">
+                                <rect key="frame" x="73" y="15" width="37" height="33"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -109,6 +109,7 @@
                             <constraint firstItem="Fi2-Ir-4Hl" firstAttribute="top" secondItem="ZIA-jk-sE5" secondAttribute="top" constant="15" id="oxW-YS-3Ua"/>
                             <constraint firstAttribute="trailing" secondItem="Vvk-1x-1tV" secondAttribute="trailing" constant="15" id="qqe-C6-Rfl"/>
                             <constraint firstAttribute="trailing" secondItem="GLT-ML-NO1" secondAttribute="trailing" id="tJc-0z-696"/>
+                            <constraint firstItem="GLT-ML-NO1" firstAttribute="top" secondItem="Fi2-Ir-4Hl" secondAttribute="bottom" constant="12" id="vfK-SW-F2K"/>
                             <constraint firstItem="zN0-67-zDn" firstAttribute="bottom" secondItem="Fi2-Ir-4Hl" secondAttribute="bottom" id="xmA-6c-5Mq"/>
                             <constraint firstItem="vMD-nx-7wU" firstAttribute="top" secondItem="Fi2-Ir-4Hl" secondAttribute="top" id="yId-Rt-vDa"/>
                             <constraint firstItem="Gh1-Vf-8vc" firstAttribute="leading" secondItem="ZIA-jk-sE5" secondAttribute="leading" constant="15" id="yo4-Ts-jfV"/>

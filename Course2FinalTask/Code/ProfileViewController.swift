@@ -16,39 +16,47 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     
     @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
     @IBOutlet weak var profile: UICollectionView!
-    @IBOutlet weak var usernameTitle: UINavigationItem!
     let apiHandler = APIHandler()
     let newAPIHandler = NewAPIHandler()
     let dispatchGroup = DispatchGroup()
-    var user: Account? {
-        didSet {
-            newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: true, range: .limit(40), completionHandler: {result in
-                self.userPosts = result
-                result.forEach({item in
-                    self.dispatchGroup.enter()
-                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
-                        self.dispatchGroup.leave()
-                    })
-                })
-                self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
-                    CATransaction.begin()
-                    CATransaction.setCompletionBlock({
-                        self.profile.collectionViewLayout.invalidateLayout()
-                    })
-                    self.profile.reloadData()
-                    CATransaction.commit()
-                })
-            })
-        }
-    }
-    var concurrentFetchinPosts: [Status] = []
-    var userPosts: [Status] = []
-    var indexForRow: IndexPath?
+    var user: MutableAccount?
+    var userPosts: [MutableStatus] = []
+    var userMediaPosts: [MutableStatus] = []
 
     // MARK: - View configuration
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let navigationController = navigationController, navigationController.topViewController == navigationController.viewControllers[0] {
+            let logOutItem = BackItem()
+            logOutItem.title = "LOG OUT"
+            logOutItem.frame = logOutItem.buttonBounds ?? CGRect(x: 0, y: 0, width: 70, height: 50)
+            logOutItem.buttonColor = UIColor(named: "background")
+            logOutItem.textColor = UIColor(named: "label")
+            logOutItem.isUserInteractionEnabled = true
+            logOutItem.addTarget(self, action: #selector(logOut(_:)), for: .touchUpInside)
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: logOutItem)
+            if navigationController.viewControllers.count > 1 {
+                let backItem = BackItem()
+                backItem.title = "BACK"
+                backItem.frame = backItem.buttonBounds ?? CGRect(x: 0, y: 0, width: 50, height: 50)
+                backItem.buttonColor = UIColor(named: "background")
+                backItem.textColor = UIColor(named: "label")
+                backItem.isUserInteractionEnabled = true
+                backItem.addTarget(self, action: #selector(backTapped(_:)), for: .touchUpInside)
+                navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backItem)
+            }
+        } else if navigationController != nil {
+            let backItem = BackItem()
+            backItem.title = "BACK"
+            backItem.frame = backItem.buttonBounds ?? CGRect(x: 0, y: 0, width: 50, height: 50)
+            backItem.buttonColor = UIColor(named: "background")
+            backItem.textColor = UIColor(named: "label")
+            backItem.isUserInteractionEnabled = true
+            backItem.addTarget(self, action: #selector(backTapped(_:)), for: .touchUpInside)
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backItem)
+        }
+        
         if UITraitCollection.current.userInterfaceStyle == .dark {
             view.backgroundColor = UIColor(patternImage: UIImage(named: "nightcopy.png")!)
         } else {
@@ -56,33 +64,32 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         }
         profile.backgroundColor = .clear
         newAPIHandler.delegate = self
-//        let layout = profile.collectionViewLayout as! UICollectionViewFlowLayout
-//        layout.estimatedItemSize = CGSize(width: 1, height: 1)
         if let layout = profile.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
         profile.prefetchDataSource = self
         profile.dataSource = self
-        profile.delegate = self
         profile.register(UINib(nibName: "ProfileCell", bundle: nil), forCellWithReuseIdentifier: "ProfileSample")
         profile.register(UINib(nibName: "SupplementaryView", bundle: nil), forSupplementaryViewOfKind: "Header", withReuseIdentifier: "SupplementarySample")
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.logOut))
-        self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
-        self.navigationItem.rightBarButtonItem?.tintColor = .systemBlue
+        profile.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
+        profile.register(UINib(nibName: "FeedCellWithoutContent", bundle: nil), forCellWithReuseIdentifier: "FeedCellWithoutContent")
+        
     }
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        if user == nil {
-//            newAPIHandler.getUser(withID: NewAPIHandler.currentUserID ?? "", completionHandler: {result in
-//                self.user = result
-//            })
-//        }
-//    }
-    
     override func viewDidAppear(_ animated: Bool) {
-        newAPIHandler.getUser(withID: "5168", completionHandler: {result in
-            self.user = result
-        })
+        navigationController?.hidesBarsOnSwipe = false
+        if user == nil {
+            newAPIHandler.getUser(withID: NewAPIHandler.currentUserID ?? "", completionHandler: {result in
+                guard let result = result else {
+                    return
+                }
+                self.user = MutableAccount(result)
+                
+                self.getData()
+            })
+        } else {
+            getData()
+        }
+        
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -96,13 +103,129 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         }
     }
     
-    @objc func logOut() {
+    private func getData() {
+        dispatchGroup.enter()
+        self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+//                CATransaction.begin()
+//                CATransaction.setCompletionBlock({
+//                    self.profile.collectionViewLayout.invalidateLayout()
+//                })
+            self.profile.reloadData()
+//                CATransaction.commit()
+            DispatchQueue.global().async {
+                Darwin.sleep(1)
+                DispatchQueue.main.async {
+//                    self.profile.collectionViewLayout.prepare()
+                    self.profile.collectionViewLayout.invalidateLayout()
+                }
+            }
+        })
+        dispatchGroup.enter()
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: false , range: .limit(2), completionHandler: {result in
+            guard let result = result else {
+                return
+            }
+            self.userPosts = []
+            result.forEach({self.userPosts.append(MutableStatus($0))})
+            result.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            
+            self.dispatchGroup.leave()
+        })
+        dispatchGroup.enter()
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: true, range: .limit(2), completionHandler: {result in
+            guard let result = result else {
+                return
+            }
+            self.userMediaPosts = []
+            result.forEach({self.userMediaPosts.append(MutableStatus($0))})
+            result.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            
+            self.dispatchGroup.leave()
+        })
+        self.dispatchGroup.leave()
+    }
+    
+    func getNextPosts(_ id: String, mediaOnly: Bool) {
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: mediaOnly , range: .max(id: id, limit: 2), completionHandler: {statuses in
+            guard let statuses = statuses else {
+                return
+            }
+            print("started")
+//            if !statuses.isEmpty {
+//                statuses.removeFirst()
+//            }
+            var indexes: [IndexPath] = []
+            for i in 0..<statuses.count {
+                indexes.append(IndexPath(item: (mediaOnly ? self.userMediaPosts.endIndex : self.userPosts.endIndex) + i, section: 0))
+            }
+            if mediaOnly {
+                statuses.forEach({self.userMediaPosts.append(MutableStatus($0))})
+            } else {
+                statuses.forEach({self.userPosts.append(MutableStatus($0))})
+            }
+            self.dispatchGroup.enter()
+            statuses.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    print("item \(item.id)")
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            
+            self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+                
+//                self.profile.collectionViewLayout.prepare()
+                self.profile.insertItems(at: indexes)
+                print("got feed")
+                self.profile.isHidden = false
+            })
+            self.dispatchGroup.leave()
+        })
+    }
+    
+    @objc func logOut(_ sender: BackItem) {
+        sender.showAnimation {
+            
+            self.newAPIHandler.logOut() {
+                DispatchQueue.main.async {
+                    let newVC = self.storyboard?.instantiateViewController(identifier: "ViewController")
+                    UIApplication.shared.delegate?.window??.rootViewController = newVC
+                }
+            }
+        }
+    }
+    
+    @objc func backTapped(_ sender: BackItem) {
+        sender.showAnimation({
+            self.navigationController?.popViewController(animated: true)
+        })
     }
     
     // MARK: - UICollectionViewDataSource
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return userPosts.count
+        let layout = profile.collectionViewLayout as! PinterestLayout
+        if layout.mode == .collectionView {
+            return userMediaPosts.count
+        } else {
+            return userPosts.count
+        }
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -110,11 +233,35 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: indexPath) as! ProfileCell
-        cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userPosts[indexPath.item].mediaAttachments[0].previewURL)!, cacheKey: userPosts[indexPath.item].mediaAttachments[0].previewURL))
-        return cell
+        if (profile.collectionViewLayout as! PinterestLayout).mode == .collectionView {
+            if indexPath.item == userMediaPosts.endIndex - 1 {
+                getNextPosts(userMediaPosts[indexPath.item].id, mediaOnly: true)
+            }
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: indexPath) as! ProfileCell
+            
+            cell.mainImage.kf.cancelDownloadTask()
+            cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userMediaPosts[indexPath.item].mediaAttachments[0].previewURL)!, cacheKey: userMediaPosts[indexPath.item].mediaAttachments[0].previewURL), placeholder: UIImage(named: "new7"))
+            return cell
+        }
+        if indexPath.item == userPosts.endIndex - 1 {
+            getNextPosts(userPosts[indexPath.item].id, mediaOnly: false)
+        }
+        if userPosts[indexPath.item].mediaAttachments.isEmpty {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedCellWithoutContent", for: indexPath) as! FeedCellWithoutContent
+            cell.post = userPosts[indexPath.item]
+            cell.delegate = self
+            cell.fill()
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedSample", for: indexPath) as! FeedCell
+            cell.post = userPosts[indexPath.item]
+            cell.delegate = self
+            cell.fill()
+            return cell
+        }
+        
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SupplementarySample", for: indexPath) as! SupplementaryView
         reusableView.myDelegate = self
@@ -124,102 +271,67 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     }
 }
 
-extension ProfileViewController: UICollectionViewDelegate {}
-
-    // MARK: - UICollectionViewDelegateFlowLayout
-
-extension ProfileViewController: UICollectionViewDelegateFlowLayout {
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        if let cell = collectionView.cellForItem(at: indexPath) as? ProfileCell {
-//            print("here")
-//            let aspectRation = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//            let width = collectionView.frame.width / 3
-//            print("size of item \(indexPath.item): desirable \(cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)), real \(cell.mainImage.frame.size), modified \(CGSize(width: width, height: width / aspectRation))")
-//            return CGSize(width: width, height: width / aspectRation)
-//        } else {
-//            return CGSize(width: collectionView.frame.width / 3, height: collectionView.frame.width / 3)
-//        }
-//        
-//    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 86)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
-}
-
-    // MARK: - HeaderDelegate
+// MARK: - HeaderDelegate
 
 extension ProfileViewController: HeaderDelegate {
-    
-    func toTable(userId: String, title: String) {
-//        let newVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TableController") as! UsersTableViewController
-//        switch title {
-//        case "Followers":
-//            newVC.navigationItem.title = title
-//            apiHandler.get(.followers, withID: userId, completionHandler: {users in
-//                guard let followers = users as? [User] else {
-//                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                    return
-//                }
-//                DispatchQueue.main.async {
-//                    newVC.data = followers
-//                    newVC.hostUser = userId
-//                    let backButtonTitle = self.navigationItem.title
-//                    self.navigationController?.pushViewController(newVC, animated: true)
-//
-//                    self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
-//                    self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
-//                    self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
-//                }
-//            })
-//            
-//        case "Following":
-//            newVC.navigationItem.title = title
-//            apiHandler.get(.following, withID: userId, completionHandler: {users in
-//                guard let followers = users as? [User] else {
-//                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                    return
-//                }
-//                DispatchQueue.main.async {
-//                    newVC.data = followers
-//                    newVC.hostUser = userId
-//                    let backButtonTitle = self.navigationItem.title
-//                    self.navigationController?.pushViewController(newVC, animated: true)
-//                    self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
-//                    self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
-//                    self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
-//                }
-//            })
-//        default:
-//            print("SMTH WRONG! ! ! !")
-//            newVC.navigationItem.title = title
-//            newVC.data = []
-//            let backButtonTitle = self.navigationItem.title
-//            self.navigationController?.pushViewController(newVC, animated: true)
-//            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
-//            self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
-//            self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
-//        }
+    func segmentedControlPressed(withIndex index: Int) {
+        let layout = profile.collectionViewLayout as! PinterestLayout
+        if index == 0 {
+            layout.mode = .tableView
+            CATransaction.begin()
+            CATransaction.setCompletionBlock({
+//                self.profile.collectionViewLayout.invalidateLayout()
+            })
+            self.profile.reloadData()
+            CATransaction.commit()
+        } else {
+            layout.mode = .collectionView
+            CATransaction.begin()
+            CATransaction.setCompletionBlock({
+//                self.profile.collectionViewLayout.invalidateLayout()
+            })
+            self.profile.reloadData()
+            CATransaction.commit()
+        }
     }
+    
+    
+    func toTable(userId: String, rCase: UsersTableViewController.RetrievingCase, sender: UIView) {
+        sender.isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
+        }, completion: {_ in
+            UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
+                sender.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }, completion: {_ in
+                self.newAPIHandler.getUser(withID: userId, completionHandler: {user in
+                    guard let user = user else {
+                        sender.isUserInteractionEnabled = true
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        let newVC = self.storyboard?.instantiateViewController(identifier: "TableController") as! UsersTableViewController
+                        newVC.hostUser = user
+                        newVC.retrievingCase = rCase
+                        self.navigationController?.pushViewController(newVC, animated: true)
+                        sender.isUserInteractionEnabled = true
+                    }
+                })
+            })
+        })
+    }
+    
 }
 
 extension ProfileViewController: PinterestLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, sizeForPhotoAtIndexPath indexPath: IndexPath) -> CGSize {
-
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCell, let size = cell.mainImage?.image?.size else {
-            print(0)
+        guard let layout = collectionView.collectionViewLayout as? PinterestLayout else {
+            return CGSize(width: 1, height: 1)
+        }
+        if layout.mode == .collectionView {
             var retrievedImage: UIImage?
-            dispatchGroup.enter()
-            ImageCache.default.retrieveImage(forKey: userPosts[indexPath.item].mediaAttachments[0].previewURL, completionHandler: {result in
+//            dispatchGroup.enter()
+            ImageCache.default.retrieveImage(forKey: userMediaPosts[indexPath.item].mediaAttachments[0].previewURL, completionHandler: {result in
                 switch result {
                 case .success(let imageCache):
                     switch imageCache {
@@ -233,28 +345,58 @@ extension ProfileViewController: PinterestLayoutDelegate {
                 case .failure(let error):
                     self.generateAlert(title: "Retrieving image error", message: error.errorDescription ?? "smth else", buttonTitle: "OK")
                 }
-                self.dispatchGroup.leave()
+//                self.dispatchGroup.leave()
             })
-            dispatchGroup.wait()
+//            dispatchGroup.wait()
             return retrievedImage != nil ? retrievedImage!.size : CGSize(width: 1, height: 1)
+        } else {
+            if userPosts[indexPath.item].mediaAttachments.isEmpty {
+                let cell = UINib(nibName: "FeedCellWithoutContent", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! FeedCellWithoutContent
+                cell.frame.size = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: collectionView.frame.height)
+                cell.widthAnchor.constraint(equalToConstant: collectionView.frame.width - layout.cellPadding * 2).isActive = true
+                cell.post = userPosts[indexPath.item]
+                cell.fill()
+                cell.layoutSubviews()
+                return cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+            } else {
+//                dispatchGroup.enter()
+                let cell = UINib(nibName: "FeedCell", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! FeedCell
+                cell.frame.size = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: collectionView.frame.height)
+                cell.translatesAutoresizingMaskIntoConstraints = false
+                cell.widthAnchor.constraint(equalToConstant: collectionView.frame.width - layout.cellPadding * 2).isActive = true
+                cell.post = userPosts[indexPath.item]
+                cell.fill({
+//                    self.dispatchGroup.leave()
+                })
+//                dispatchGroup.wait()
+                cell.layoutSubviews()
+                print(cell.post?.id)
+                print("cell size: \(cell.frame.size)")
+                print("cell desired size: \(cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))")
+                let aspectRatio = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+                let layout = collectionView.collectionViewLayout as! PinterestLayout
+                let height = (collectionView.frame.width - layout.cellPadding * 2) / aspectRatio
+                let difference = height - cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+                let cellFinalSize = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + difference)
+                print("difference: \(difference)")
+                print("final size: \(cellFinalSize)")
+                print("current size: \(cell.mainImage.frame.size)")
+                print("desired size: \(cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
+                return cellFinalSize
+            }
         }
-        print("cell size: \(size)")
-        return size
     }
     func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize? {
-//        guard let supplementaryView = collectionView.supplementaryView(forElementKind: kind, at: indexPath) as? SupplementaryView else {
-//            print(2)
-//            return CGSize(width: collectionView.frame.width, height: 201)
-//        }
-//        let calculatedHeightOfAvatar = supplementaryView.avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//        let calculatedHeightOfFullName = supplementaryView.fullName.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//        let calculatedHeightOfUsername = supplementaryView.username.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//        let calculatedHeightOfNote = supplementaryView.note.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//        let calculatedHeightOfSegmentedControl = supplementaryView.postsOrMediaSegmentedControl?.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height ?? CGFloat(31)
-//        let totalSize = calculatedHeightOfAvatar + calculatedHeightOfFullName + calculatedHeightOfUsername + calculatedHeightOfNote + 20 + calculatedHeightOfSegmentedControl
-//        let size = CGSize(width: collectionView.frame.width, height: totalSize + 160)
-//        return size
-        return nil
+        
+        let supplementaryView = UINib(nibName: "SupplementaryView", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! SupplementaryView
+        supplementaryView.frame.size = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+//        supplementaryView.translatesAutoresizingMaskIntoConstraints = false
+        supplementaryView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        supplementaryView.user = user
+        supplementaryView.fill()
+        supplementaryView.layoutSubviews()
+        print("supsize: \(supplementaryView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
+        return supplementaryView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
     }
 }
 
@@ -272,5 +414,30 @@ extension ProfileViewController: UICollectionViewDataSourcePrefetching {
 //        })
 //
     }
+}
+
+extension ProfileViewController: FeedCellDelegate {
+    func toAuthorProfile(withID id: String) {
+        self.newAPIHandler.getUser(withID: id, completionHandler: {user in
+            guard let user = user else {
+                return
+            }
+            DispatchQueue.main.async {
+                let newVC = self.storyboard?.instantiateViewController(identifier: "Profile") as! ProfileViewController
+                newVC.user = MutableAccount(user)
+                self.navigationController?.pushViewController(newVC, animated: true)
+            }
+        })
+    }
+    
+    func toLikes(ofPostID id: String) {
+        DispatchQueue.main.async {
+            let newVC = self.storyboard?.instantiateViewController(identifier: "TableController") as! UsersTableViewController
+            newVC.retrievingCase = .likes(id)
+            self.navigationController?.pushViewController(newVC, animated: true)
+        }
+    }
+    
+    
 }
 

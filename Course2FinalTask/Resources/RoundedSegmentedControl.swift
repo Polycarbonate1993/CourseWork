@@ -92,7 +92,7 @@ class RoundedSegmentedControl: UIControl {
     
     
     @IBInspectable
-    var font = UIFont(name: "Futura-Bold", size: 18) {
+    var font: UIFont = UIFont(name: "Futura-Bold", size: 18)! {
         didSet {
             setUpView()
         }
@@ -134,7 +134,7 @@ class RoundedSegmentedControl: UIControl {
     
     
     @IBInspectable
-    private var index: UInt = 0 
+    private var index: UInt = 1
     
     func setUpView() {
         buttons.removeAll()
@@ -182,11 +182,13 @@ class RoundedSegmentedControl: UIControl {
                 UIView.animate(withDuration: 0.3, animations: {
                     self.selector.frame = button.frame
                     button.setTitleColor(self.selectedTextColor, for: .normal)
+                }, completion: {_ in
+                    self.sendActions(for: .valueChanged)
                 })
             }
         }
         
-        sendActions(for: .valueChanged)
+        
     }
     
     override func draw(_ rect: CGRect) {

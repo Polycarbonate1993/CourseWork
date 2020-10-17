@@ -11,30 +11,49 @@ import Kingfisher
 
 class FilterCell: UICollectionViewCell {
 
+    @IBOutlet weak var thumbnailShadow: UIView!
     @IBOutlet weak var thumbnail: UIImageView!
-    @IBOutlet weak var filterName: UILabel!
-    var picture: UIImage? {
-        didSet {
-            self.getFilter()
-        }
-    }
+    @IBOutlet weak var filterDisplayName: UILabel!
+    var filterName: String?
+    var picture: UIImage?
     let context = CIContext()
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        thumbnailShadow.layer.masksToBounds = false
+        thumbnailShadow.layer.shadowOpacity = 0.6
+        thumbnailShadow.layer.shadowOffset = CGSize(width: 3, height: 3)
+        thumbnailShadow.layer.shadowColor = UIColor.black.cgColor
+        thumbnail.layer.cornerRadius = self.thumbnail.bounds.size.width / 2
+        thumbnail.layer.borderColor = UIColor(named: "liked")?.cgColor
+        thumbnail.layer.borderWidth = 5
     }
 
     func getFilter() {
+        
+        guard let text = filterName, let image = picture else {
+            return
+        }
         DispatchQueue.global(qos: .utility).async {
-            let processor = Kingfisher.DownsamplingImageProcessor(size: CGSize(width: 100, height: 100))
-            let thumbnailInput = processor.process(item: .image(self.picture!), options: [])
-            let inputImage = CIImage(image: thumbnailInput!)
-            let filter = CIFilter(name: self.filterName.text!, parameters: [kCIInputImageKey: inputImage as Any])
+            let inputImage = CIImage(image: image)
+            let filter = CIFilter(name: text, parameters: [kCIInputImageKey: inputImage as Any])
             let result = filter?.outputImage
             let cgImage = self.context.createCGImage(result!, from: result!.extent)
             let uiImage = UIImage(cgImage: cgImage!)
+//            self.picture = image
             DispatchQueue.main.async {
                 self.thumbnail.image = uiImage
+            }
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if previousTraitCollection != nil {
+            if previousTraitCollection!.userInterfaceStyle == .light {
+                thumbnail.layer.borderColor = UIColor(named: "liked")?.cgColor
+            } else {
+                thumbnail.layer.borderColor = UIColor(named: "liked")?.cgColor
             }
         }
     }

@@ -3,4 +3,6 @@
 
 target 'Course2FinalTask' do
   pod 'Streamoji'
+  pod 'Kingfisher'
+  pod 'p2.OAuth2'
 end

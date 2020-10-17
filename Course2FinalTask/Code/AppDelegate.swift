@@ -8,22 +8,12 @@
 import UIKit
 import CoreData
 import Kingfisher
-import OAuth2
+import p2_OAuth2
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-    let oAuth2 = OAuth2CodeGrant(settings: [
-        "client_id": "ac4DFdmEXNquMLFjYkRJFEqntn6gookPIxj_QeZlOwc",
-        "client_secret": "TfwMrdebdWkMIjC4TDW7pkFdw5QCx1tzqQOyg2z97r4",
-        "authorize_uri": "https://mstdn.social/oauth/authorize",
-        "token_uri": "https://mstdn.social/oauth/token",   // code grant only
-        "redirect_uris": ["photonetwork://oauth-callback"],   // register your own "myapp" scheme in Info.plist
-        "scope": "read write follow",
-        "keychain": "false"
-    ] as OAuth2JSON)
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -33,22 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
  
         let LoginViewController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
-        
-        LoginViewController.oAuth2 = self.oAuth2
 
         window?.rootViewController = LoginViewController
      
         window?.makeKeyAndVisible()
         
         return true
-    }
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey  : Any] = [:]) -> Bool {
-        if url.host == "oauth-callback" {
-            oAuth2.handleRedirectURL(url)
-            return true
-        }
-      return false
     }
 }
 
@@ -222,5 +202,21 @@ extension UIColor {
         }
 
         return nil
+    }
+}
+
+extension UITabBar {
+    static func setTransparentTabBar() {
+//        UITabBar.appearance().backgroundImage = UIImage()
+//        UITabBar.appearance().shadowImage = UIImage()
+        UITabBar.appearance().clipsToBounds = true
+        UITabBar.appearance().unselectedItemTintColor = UIColor(named: "unselected")
+    }
+}
+
+extension UINavigationBar {
+    static func setTransparentNavigationBar() {
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+        UINavigationBar.appearance().shadowImage = UIImage()
     }
 }

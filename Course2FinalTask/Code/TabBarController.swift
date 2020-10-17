@@ -7,22 +7,21 @@
 //
 
 import UIKit
+import MastodonKit
 
 class TabBarController: UITabBarController {
     var dataManager: CoreDataManager!
+    var mastodonApiHandler: NewAPIHandler?
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+        tabBar.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        tabBar.layer.cornerRadius = UIScreen.main.bounds.width / 10
     }
 }
 
 extension TabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print(selectedIndex)
-        if selectedIndex == 0 && ((viewController as! NavigationController).visibleViewController is FeedViewController){
-//            ((viewController as! NavigationController).visibleViewController as! FeedViewController).getFeed()
-        } else if selectedIndex == 2 && ((viewController as! NavigationController).visibleViewController is ProfileViewController) {
-            ((viewController as! NavigationController).visibleViewController as! ProfileViewController).user = ((viewController as! NavigationController).visibleViewController as! ProfileViewController).user
-        }
+        
     }
 }

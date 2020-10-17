@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,18 +17,18 @@
                 <rect key="frame" x="0.0" y="0.0" width="234" height="234"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nem-83-0q0">
+                    <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="new7" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nem-83-0q0">
                         <rect key="frame" x="0.0" y="0.0" width="234" height="234"/>
                     </imageView>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="nem-83-0q0" secondAttribute="bottom" id="LUn-Sn-T0w"/>
                 <constraint firstAttribute="trailing" secondItem="nem-83-0q0" secondAttribute="trailing" id="NOK-mr-FXK"/>
                 <constraint firstItem="nem-83-0q0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ZGU-i0-gpP"/>
                 <constraint firstItem="nem-83-0q0" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="oQz-tg-vyF"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="234" height="234"/>
             <connections>
                 <outlet property="mainImage" destination="nem-83-0q0" id="EIt-ZS-hSG"/>
@@ -35,4 +36,7 @@
             <point key="canvasLocation" x="242.0289855072464" y="125.89285714285714"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <image name="new7" width="479" height="479"/>
+    </resources>
 </document>

@@ -26,17 +26,8 @@ class FeedCell: UICollectionViewCell {
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var displayName: UILabel!
     let apiHandler = APIHandler()
-    var post: Status? {
-        didSet {
-            guard let emojis = post?.emojis else {
-                print("something wrong with emoji")
-                return
-            }
-            for item in emojis {
-                emojiSource[item.shortcode] = .imageUrl(item.staticURL.absoluteString)
-            }
-        }
-    }
+    let newAPIHandler = NewAPIHandler()
+    var post: MutableStatus? 
     var emojiSource: [String: EmojiSource] = [:]
     weak var delegate: FeedCellDelegate?
     
@@ -56,15 +47,15 @@ class FeedCell: UICollectionViewCell {
         username.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         likes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toLikes)))
         self.contentView.layer.cornerRadius = contentView.bounds.size.width / 10
-        
+        self.contentView.layer.masksToBounds = true
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.6
         self.layer.shadowOffset = CGSize(width: 2, height: 2)
         mainView.backgroundColor = UIColor(named: "background")
-        avatar.layer.cornerRadius = 40
+        avatar.layer.cornerRadius = avatar.bounds.width / 2
     }
     
-    func fill() {
+    func fill(_ completion: (() -> Void)? = nil) {
         guard let status = post else {
             return
         }
@@ -76,39 +67,47 @@ class FeedCell: UICollectionViewCell {
         dateFormatter.doesRelativeDateFormatting = true
         date.text = dateFormatter.string(from: status.createdAt)
         date.textColor = UIColor(named: "label")
-        var attributedDescription = try? NSMutableAttributedString(data: status.content.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+        let attributedDescription = try? NSMutableAttributedString(data: status.content.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
         if attributedDescription!.string != "" {
             attributedDescription?.deleteCharacters(in: NSRange.init(location: attributedDescription!.length - 1, length: 1))
             descriptionText.attributedText = attributedDescription
-//            descriptionText.configureEmojis(emojiSource, rendering: .lowQuality)
+            let emojis = status.emojis 
+            for item in emojis {
+                emojiSource[item.shortcode] = .imageUrl(item.staticURL.absoluteString)
+            }
+            descriptionText.configureEmojis(emojiSource, rendering: .lowQuality)
             descriptionText.font = UIFont.init(name: "Helvetica-Bold", size: 14)
             descriptionText.textColor = UIColor(named: "label")
         } else {
             descriptionText.attributedText = nil
         }
-        displayName.text = status.account.displayName
+        displayName.text = status.account.username
         displayName.textColor = UIColor(named: "label")
         likes.text = "Likes: \(status.favouritesCount)"
         likes.textColor = UIColor(named: "label")
-        username.text = "@" + status.account.username
+        username.text = "@" + status.account.acct
         username.textColor = UIColor(named: "secondaryLabel")
-        mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: status.mediaAttachments[0].previewURL)!, cacheKey: status.mediaAttachments[0].previewURL))
+        
         if status.favourited! {
             likeButton.tintColor = UIColor(named: "liked")
         } else {
             likeButton.tintColor = UIColor(named: "unliked")
         }
+        mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: status.mediaAttachments[0].previewURL)!, cacheKey: status.mediaAttachments[0].previewURL), completionHandler: {_ in
+            completion?()
+        })
     }
     
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        setNeedsLayout()
-        layoutIfNeeded()
-        let newLayoutAttributes = layoutAttributes
-        newLayoutAttributes.size.width = UIScreen.main.bounds.width - 20
-        let aspectRatio = mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-        newLayoutAttributes.size.height = (UIScreen.main.bounds.width - 20) / aspectRatio + descriptionText.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + likes.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + 49
-        return newLayoutAttributes
-    }
+//    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+//        setNeedsLayout()
+//        layoutIfNeeded()
+//        let newLayoutAttributes = layoutAttributes
+//        newLayoutAttributes.size.width = UIScreen.main.bounds.width - 20
+//        let aspectRatio = mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+//        newLayoutAttributes.size.height = (UIScreen.main.bounds.width - 20) / aspectRatio + descriptionText.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + likes.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + 49
+//        self.contentView.layer.cornerRadius = newLayoutAttributes.size.width / 10
+//        return newLayoutAttributes
+//    }
 
     // MARK: - Action handling
     
@@ -139,14 +138,91 @@ class FeedCell: UICollectionViewCell {
     }
     
     @objc func toProfile() {
-//        delegate?.toAuthorProfile(withID: post!.author)
+        avatar.isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
+            self.avatar.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+        }, completion: {_ in
+            UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
+                self.avatar.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }, completion: {_ in
+                self.avatar.isUserInteractionEnabled = true
+                self.delegate?.toAuthorProfile(withID: self.post!.account.id)
+            })
+        })
     }
     
     @objc func toLikes() {
-//        delegate?.toLikes(ofPostID: post!.id)
+        likes.isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
+            self.likes.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
+        }, completion: {_ in
+            UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
+                self.likes.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }, completion: {_ in
+                self.likes.isUserInteractionEnabled = true
+                self.delegate?.toLikes(ofPostID: self.post!.id)
+            })
+        })
     }
     
     @IBAction func tappedLikeButton(_ sender: Any) {
+        guard let post = post else {
+            return
+        }
+        likeButton.isUserInteractionEnabled = false
+        if post.favourited != nil, post.favourited! {
+            UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
+                self.likeButton.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
+            }, completion: {_ in
+                UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
+                    self.likeButton.transform = CGAffineTransform(scaleX: 1, y: 1)
+                }, completion: {_ in
+                    self.newAPIHandler.unlike(postID: post.id, completion: {status in
+                        guard let status = status else {
+                            DispatchQueue.main.async {
+                                self.likeButton.isUserInteractionEnabled = true
+                            }
+                            return
+                        }
+//                        self.post = status
+                        self.post?.favourited = status.favourited
+                        self.post?.favouritesCount = status.favouritesCount == self.post?.favouritesCount ? self.post!.favouritesCount - 1 : status.favouritesCount
+                        DispatchQueue.main.async {
+                            self.likeButton.tintColor = UIColor(named: "unliked")
+                            self.likes.text = "Likes: \(post.favouritesCount)"
+                            self.likeButton.isUserInteractionEnabled = true
+                        }
+                    })
+                })
+            })
+        } else if post.favourited != nil {
+            UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
+                self.likeButton.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
+            }, completion: {_ in
+                UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
+                    self.likeButton.transform = CGAffineTransform(scaleX: 1, y: 1)
+                }, completion: {_ in
+                    self.newAPIHandler.like(postID: post.id, completion: {status in
+                        guard let status = status else {
+                            DispatchQueue.main.async {
+                                self.likeButton.isUserInteractionEnabled = true
+                            }
+                            return
+                        }
+//                        self.post = status
+                        self.post?.favourited = status.favourited
+                        self.post?.favouritesCount = status.favouritesCount
+                        DispatchQueue.main.async {
+                            self.likeButton.tintColor = UIColor(named: "liked")
+                            self.likes.text = "Likes: \(post.favouritesCount)"
+                            self.likeButton.isUserInteractionEnabled = true
+                        }
+                    })
+                })
+            })
+        } else {
+            likeButton.isUserInteractionEnabled = true
+        }
 //        if likeButton.tintColor == .lightGray {
 //            (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
 //                guard let newPost = likedPost as? Post else {

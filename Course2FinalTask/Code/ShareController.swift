@@ -29,7 +29,7 @@ class ShareController: UIViewController {
 
     @objc func shareAction() {
         apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {post in
-            guard let post = post else {
+            guard post != nil else {
                 self.generateAlert(title: "Oops!", message: "There is no post.", buttonTitle: "OK")
                 return
             }
@@ -46,7 +46,7 @@ class ShareController: UIViewController {
 extension ShareController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         apiHandler.createPost(image: photoImage.image ?? UIImage(), description: descriptionFiled.text, completionHandler: {post in
-            guard let post = post else {
+            guard post != nil else {
                 self.generateAlert(title: "Oops!", message: "There is no post.", buttonTitle: "OK")
                 return
             }

@@ -9,6 +9,11 @@
 import UIKit
 
 class NavigationController: UINavigationController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+//        let backItem = UIBarButtonItem(customView: <#T##UIView#>)
+    }
 
     // MARK: - Changing default behavior
     
@@ -30,17 +35,6 @@ class NavigationController: UINavigationController {
 
 extension NavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if viewController is UsersTableViewController {
-            (viewController as! UsersTableViewController).usersTable.deselectRow(at: (viewController as! UsersTableViewController).indexForRow!, animated: true)
-            if (viewController as! UsersTableViewController).navigationItem.title == "Followers" || (viewController as! UsersTableViewController).navigationItem.title == "Following" {
-                (viewController as! UsersTableViewController).renewData()
-            }
-        } else if viewController is ProfileViewController {
-            (viewController as! ProfileViewController).apiHandler.get(.user, completionHandler: {user in
-                guard let currentUser = user as? User else {
-                    return
-                }
-            })
-        }
+        
     }
 }

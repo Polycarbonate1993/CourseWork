@@ -8,26 +8,34 @@
 
 import UIKit
 import Kingfisher
+import MastodonKit
+import Streamoji
 
 class UsersTableViewCell: UITableViewCell {
 
-    var userId: String!
-    
-    override var safeAreaInsets: UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 0, bottom: 1, right: 0)
-    }
+    @IBOutlet weak var avatar: UIImageView!
+    @IBOutlet weak var displayName: UILabel!
+    var user: Account?
+    var emojiSource: [String: EmojiSource] = [:]
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        imageView?.translatesAutoresizingMaskIntoConstraints = false
-        imageView?.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        imageView?.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
-        imageView?.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
-        imageView?.widthAnchor.constraint(equalTo: imageView!.heightAnchor).isActive = true
-        textLabel?.translatesAutoresizingMaskIntoConstraints = false
-        textLabel?.leadingAnchor.constraint(equalTo: imageView?.safeAreaLayoutGuide.trailingAnchor ?? safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        textLabel?.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
-        textLabel?.font = UIFont.systemFont(ofSize: 17)
-        textLabel?.textColor = .black
+        self.contentView.layer.masksToBounds = true
+        self.contentView.layer.cornerRadius = contentView.bounds.size.height / 2
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOpacity = 0.6
+        self.layer.shadowOffset = CGSize(width: 2, height: 2)
+        avatar.layer.cornerRadius = avatar.bounds.height / 2
+    }
+    
+    func fill() {
+        guard let user = user else {
+            return
+        }
+        
+        avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: user.avatar)!, cacheKey: user.avatar))
+        displayName.text = user.username
+        
+        print("coorner: \(avatar.layer.cornerRadius), height: \(avatar.bounds.height)")
     }
 }

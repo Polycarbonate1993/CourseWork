@@ -16,9 +16,10 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     // MARK: - Outlets and properties
     
     @IBOutlet weak var feed: UICollectionView!
-    @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
+    @IBOutlet weak var backButtonItem: UINavigationItem!
     let newAPIHandler = NewAPIHandler()
-    var feedData: [Status] = []
+    let dispatchGroup = DispatchGroup()
+    var feedData: [MutableStatus] = []
     
     
     // MARK: - View configuration
@@ -27,11 +28,13 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         super.viewDidLoad()
         newAPIHandler.delegate = self
         feed.dataSource = self
-        feed.delegate = self
+        
         feed.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
         feed.register(UINib(nibName: "FeedCellWithoutContent", bundle: nil), forCellWithReuseIdentifier: "FeedCellWithoutContent")
-        let layout = feed.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.estimatedItemSize = CGSize(width: 1, height: 1)
+        if let layout = feed.collectionViewLayout as? PinterestLayout {
+            layout.delegate = self
+            layout.mode = .tableView
+        }
         feed.backgroundColor = .clear
         if UITraitCollection.current.userInterfaceStyle == .dark {
             view.backgroundColor = UIColor(patternImage: UIImage(named: "nightcopy.png")!)
@@ -42,26 +45,49 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        navigationController?.hidesBarsOnSwipe = false
+        navigationController?.isNavigationBarHidden = true
         feed.isHidden = true
     }
     override func viewDidAppear(_ animated: Bool) {
         newAPIHandler.getFeed(completionHandler: {result in
-            self.feedData = result
-            DispatchQueue.main.async {
-                CATransaction.begin()
-                CATransaction.setCompletionBlock({
-                    print("reload completed")
-//                    self.feed.scrollToItem(at: IndexPath.init(item: 1, section: 0), at: .top, animated: false)
-//                    self.feed.scrollToItem(at: IndexPath.init(item: 0, section: 0), at: .top, animated: false)
-                    self.feed.collectionViewLayout.invalidateLayout()
-                    self.feed.isHidden = false
-                    //Your completion code here
-                })
-                print("reloading")
-                self.feed.reloadData()
-                CATransaction.commit()
+            guard let result = result else {
+                return
             }
+            self.feedData = []
+            result.forEach({self.feedData.append(MutableStatus($0))})
+            self.dispatchGroup.enter()
+            result.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+                self.feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+//                self.feed.collectionViewLayout.prepare()
+//                self.feed.collectionViewLayout.invalidateLayout()
+                self.feed.reloadData()
+                
+                DispatchQueue.global().async {
+                    Darwin.sleep(1)
+                    DispatchQueue.main.async {
+                        self.feed.collectionViewLayout.prepare()
+                        self.feed.collectionViewLayout.invalidateLayout()
+                    }
+                }
+                print("okey dokey")
+                self.feed.isHidden = false
+            })
+            self.dispatchGroup.leave()
         })
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        navigationController?.hidesBarsOnSwipe = true
+        navigationController?.isNavigationBarHidden = false
     }
     
     private func saveFeedToDataBase() {
@@ -93,6 +119,10 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print("indexPath: \(indexPath.item), feedData item: \(feedData.endIndex)")
+        if indexPath.item == feedData.endIndex - 1 {
+            getNextPosts(feedData[indexPath.item].id)
+        }
         if feedData[indexPath.item].mediaAttachments.isEmpty {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedCellWithoutContent", for: indexPath) as! FeedCellWithoutContent
             cell.post = feedData[indexPath.item]
@@ -106,27 +136,62 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
             cell.fill()
             return cell
         }
+        
+        
+    }
+    
+    func getNextPosts(_ id: String) {
+        newAPIHandler.getFeed(range: .max(id: id, limit: 10), completionHandler: {statuses in
+            guard var statuses = statuses else {
+                return
+            }
+            print("started")
+            statuses.removeFirst()
+            statuses.forEach({self.feedData.append(MutableStatus($0))})
+            statuses.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    print("item \(item.id)")
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+                self.feed.collectionViewLayout.prepare()
+                self.feed.reloadData()
+                print("got feed")
+                self.feed.isHidden = false
+            })
+        })
+    }
+    @IBAction func buttonPressed(_ sender: Any) {
+        print("feedData count: \(feedData.count)")
+//        feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+        feed.collectionViewLayout.prepare()
+//        feed.reloadData()
     }
 }
-
-extension FeedViewController: UICollectionViewDelegate {
-}
-
-    // MARK: - UICollectionViewDelegateFlowLayout
-
-//extension FeedViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        var height: CGFloat = 8 + 35 + 8 + 44 + 55
-//        height += feed.frame.width
-//        return CGSize(width: feed.frame.width, height: height)
-//    }
-//}
 
     // MARK: - FeedCellDelegate
 
 extension FeedViewController: FeedCellDelegate {
 
     func toAuthorProfile(withID id: String) {
+        if id == NewAPIHandler.currentUserID {
+            self.tabBarController?.selectedIndex = 2
+        } else {
+            self.newAPIHandler.getUser(withID: id, completionHandler: {user in
+                guard let user = user else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    let newVC = self.storyboard?.instantiateViewController(identifier: "Profile") as! ProfileViewController
+                    newVC.user = MutableAccount(user)
+                    self.navigationController?.pushViewController(newVC, animated: true)
+                }
+            })
+        }
 //        if id == APIHandler.currentUserId {
 //            self.performSegue(withIdentifier: "unwindToProfile", sender: self)
 //        } else {
@@ -148,23 +213,58 @@ extension FeedViewController: FeedCellDelegate {
     }
 
     func toLikes(ofPostID id: String) {
-//        apiHandler.get(.likes, withID: id, completionHandler: {users in
-//            guard let likingUsers = users as? [User] else {
-//                self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                return
-//            }
-//            DispatchQueue.main.async {
-//                let newVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TableController") as! UsersTableViewController
-//                newVC.navigationItem.title = "Likes"
-//                newVC.data = likingUsers
-//                let backButtonTitle = self.navigationItem.title
-//                self.navigationController?.pushViewController(newVC, animated: true)
-//                self.navigationItem.backBarButtonItem = UIBarButtonItem(title: backButtonTitle, style: UIBarButtonItem.Style.plain, target: nil, action: nil)
-//                self.navigationItem.backBarButtonItem?.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 17)], for: .normal)
-//                self.navigationItem.backBarButtonItem?.tintColor = .systemBlue
-//            }
-//        })
+        DispatchQueue.main.async {
+            let newVC = self.storyboard?.instantiateViewController(identifier: "TableController") as! UsersTableViewController
+            newVC.retrievingCase = .likes(id)
+            self.navigationController?.pushViewController(newVC, animated: true)
+        }
     }
+    
+}
+
+extension FeedViewController: PinterestLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, sizeForPhotoAtIndexPath indexPath: IndexPath) -> CGSize {
+        let layout = collectionView.collectionViewLayout as! PinterestLayout
+        if feedData[indexPath.item].mediaAttachments.isEmpty {
+            let cell = UINib(nibName: "FeedCellWithoutContent", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! FeedCellWithoutContent
+            cell.frame.size = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: collectionView.frame.height)
+            cell.widthAnchor.constraint(equalToConstant: collectionView.frame.width - layout.cellPadding * 2).isActive = true
+            cell.post = feedData[indexPath.item]
+            cell.fill()
+            cell.layoutSubviews()
+            return cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+        } else {
+//            dispatchGroup.enter()
+            let cell = UINib(nibName: "FeedCell", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! FeedCell
+            cell.frame.size = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: collectionView.frame.height)
+            cell.translatesAutoresizingMaskIntoConstraints = false
+            cell.widthAnchor.constraint(equalToConstant: collectionView.frame.width - layout.cellPadding * 2).isActive = true
+            cell.post = feedData[indexPath.item]
+            cell.fill({
+//                self.dispatchGroup.leave()
+            })
+//            dispatchGroup.wait()
+            cell.layoutSubviews()
+            print(cell.post?.id)
+            print("cell size: \(cell.frame.size)")
+            print("cell desired size: \(cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))")
+            let aspectRatio = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+            let height = (collectionView.frame.width) / aspectRatio
+            let difference = height - cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+            let cellFinalSize = CGSize(width: collectionView.frame.width, height: cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + difference)
+            print("difference: \(difference)")
+            print("final size: \(cellFinalSize)")
+            print("current size: \(cell.mainImage.frame.size)")
+            print("desired size: \(cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
+            return cellFinalSize
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize? {
+        nil
+    }
+    
+    
 }
     
    
