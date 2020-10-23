@@ -1,9 +1,8 @@
 PODS:
-  - Kingfisher (5.15.1):
-    - Kingfisher/Core (= 5.15.1)
-  - Kingfisher/Core (5.15.1)
+  - Kingfisher (5.15.6):
+    - Kingfisher/Core (= 5.15.6)
+  - Kingfisher/Core (5.15.6)
   - Nuke (8.4.1)
-  - p2.OAuth2 (5.0.0)
   - Streamoji (0.1.8):
     - Nuke (~> 8.4)
     - SwiftyGif (~> 5.2)
@@ -11,24 +10,21 @@ PODS:
 
 DEPENDENCIES:
   - Kingfisher
-  - p2.OAuth2
   - Streamoji
 
 SPEC REPOS:
   trunk:
     - Kingfisher
     - Nuke
-    - p2.OAuth2
     - Streamoji
     - SwiftyGif
 
 SPEC CHECKSUMS:
-  Kingfisher: 3260a05e78a17fdbeb2f14dd8e66ffc768491231
+  Kingfisher: b3554e7bf6106115b44e8795300bad580ef2fdc7
   Nuke: d780e3507a86b86c589ab3cc5cd302d5456f06fb
-  p2.OAuth2: 5d203b46c2857b4bbcca3e521089959e7b3b5a5c
   Streamoji: d068bb7a71f77d69ba3da167de4048db21de8548
   SwiftyGif: e466e86c660d343357ab944a819a101c4127cb40
 
-PODFILE CHECKSUM: d9ab396b6f1c9b969b2f7610a0da780727e26b64
+PODFILE CHECKSUM: 0a124a621bc56d0277063241aeb9d5b79103dff4
 
 COCOAPODS: 1.9.3

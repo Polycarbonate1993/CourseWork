@@ -28,6 +28,7 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         super.viewDidLoad()
         newAPIHandler.delegate = self
         feed.dataSource = self
+        feed.delegate = self
         
         feed.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
         feed.register(UINib(nibName: "FeedCellWithoutContent", bundle: nil), forCellWithReuseIdentifier: "FeedCellWithoutContent")
@@ -78,7 +79,6 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
                         self.feed.collectionViewLayout.invalidateLayout()
                     }
                 }
-                print("okey dokey")
                 self.feed.isHidden = false
             })
             self.dispatchGroup.leave()
@@ -89,18 +89,7 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         navigationController?.hidesBarsOnSwipe = true
         navigationController?.isNavigationBarHidden = false
     }
-    
-    private func saveFeedToDataBase() {
-//        var fetchedPosts = (self.tabBarController as! TabBarController).dataManager.fetchData(for: CoreDataPost.self, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "inFeed == TRUE")]))
-//        if !fetchedPosts.isEmpty {
-//            for post in fetchedPosts {
-//                (self.tabBarController as! TabBarController).dataManager.delete(object: post)
-//            }
-//        }
-//        let context = (tabBarController as! TabBarController).dataManager.getContext()
-//        let newArray: [CoreDataPost] = feedData.exportToCoreDataFromDecodedJSONData(withMarker: true, CoreDataPost.self)
-//        (tabBarController as! TabBarController).dataManager.save(context: context)
-    }
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if previousTraitCollection != nil {
@@ -112,6 +101,44 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         }
     }
     
+    func getNextPosts(_ id: String) {
+        newAPIHandler.getFeed(range: .max(id: id, limit: 10), completionHandler: {statuses in
+            guard var statuses = statuses else {
+                return
+            }
+            var indexes: [IndexPath] = []
+            for i in 0..<statuses.count {
+                indexes.append(IndexPath(item: self.feedData.endIndex + i, section: 0))
+            }
+            statuses.forEach({self.feedData.append(MutableStatus($0))})
+            statuses.forEach({item in
+                if !item.mediaAttachments.isEmpty {
+                    self.dispatchGroup.enter()
+                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
+                        self.dispatchGroup.leave()
+                    })
+                }
+            })
+            self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+                self.feed.isUserInteractionEnabled = false
+                self.feed.performBatchUpdates({
+                    self.feed.insertItems(at: indexes)
+                    self.feed.isHidden = false
+                }, completion: {result in
+                    self.feed.isUserInteractionEnabled = true
+                })
+            })
+        })
+    }
+    @IBAction func buttonPressed(_ sender: Any) {
+//        feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+//        for item in (feed.collectionViewLayout as! PinterestLayout).cache {
+//            print("\(item.frame), \(item.indexPath.item)")
+//        }
+        
+//        feed.reloadData()
+    }
+    
     // MARK: - UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -119,10 +146,6 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print("indexPath: \(indexPath.item), feedData item: \(feedData.endIndex)")
-        if indexPath.item == feedData.endIndex - 1 {
-            getNextPosts(feedData[indexPath.item].id)
-        }
         if feedData[indexPath.item].mediaAttachments.isEmpty {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedCellWithoutContent", for: indexPath) as! FeedCellWithoutContent
             cell.post = feedData[indexPath.item]
@@ -140,36 +163,25 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         
     }
     
-    func getNextPosts(_ id: String) {
-        newAPIHandler.getFeed(range: .max(id: id, limit: 10), completionHandler: {statuses in
-            guard var statuses = statuses else {
-                return
-            }
-            print("started")
-            statuses.removeFirst()
-            statuses.forEach({self.feedData.append(MutableStatus($0))})
-            statuses.forEach({item in
-                if !item.mediaAttachments.isEmpty {
-                    self.dispatchGroup.enter()
-                    print("item \(item.id)")
-                    KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
-                        self.dispatchGroup.leave()
-                    })
-                }
-            })
-            self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
-                self.feed.collectionViewLayout.prepare()
-                self.feed.reloadData()
-                print("got feed")
-                self.feed.isHidden = false
-            })
-        })
-    }
-    @IBAction func buttonPressed(_ sender: Any) {
-        print("feedData count: \(feedData.count)")
-//        feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
-        feed.collectionViewLayout.prepare()
-//        feed.reloadData()
+    
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension FeedViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let layout = collectionView.collectionViewLayout as? PinterestLayout else {
+            return
+        }
+        let index = IndexPath(item: indexPath.item - 1, section: 0)
+        guard (collectionView.cellForItem(at: index) != nil) else {
+            return
+        }
+        
+        if feedData.endIndex - 1 == indexPath.item {
+            getNextPosts(feedData[indexPath.item].id)
+        }
     }
 }
 
@@ -245,17 +257,10 @@ extension FeedViewController: PinterestLayoutDelegate {
             })
 //            dispatchGroup.wait()
             cell.layoutSubviews()
-            print(cell.post?.id)
-            print("cell size: \(cell.frame.size)")
-            print("cell desired size: \(cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))")
             let aspectRatio = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
             let height = (collectionView.frame.width) / aspectRatio
             let difference = height - cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
             let cellFinalSize = CGSize(width: collectionView.frame.width, height: cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + difference)
-            print("difference: \(difference)")
-            print("final size: \(cellFinalSize)")
-            print("current size: \(cell.mainImage.frame.size)")
-            print("desired size: \(cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
             return cellFinalSize
         }
     }

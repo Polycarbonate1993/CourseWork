@@ -18,11 +18,11 @@ class UsersTableViewController: UIViewController {
     @IBOutlet weak var usersTable: UITableView!
     var users:[Account] = []
     var hostUser: Account?
-    let apiHandler = APIHandler()
     let newAPIHandler = NewAPIHandler()
     var retrievingCase: RetrievingCase?
     let cellPadding: CGFloat = 5
     
+    /// List of cases for requesting array of Accounts from server.
     enum RetrievingCase {
         case followers
         case following
@@ -39,7 +39,6 @@ class UsersTableViewController: UIViewController {
         backItem.isUserInteractionEnabled = true
         backItem.addTarget(self, action: #selector(backTapped(_:)), for: .touchUpInside)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backItem)
-        apiHandler.delegate = self
         usersTable.dataSource = self
         usersTable.delegate = self
         usersTable.register(UINib(nibName: "UsersTableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")

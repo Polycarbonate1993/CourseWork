@@ -16,7 +16,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     
     @IBAction func unwind(unwindSegue: UIStoryboardSegue) {}
     @IBOutlet weak var profile: UICollectionView!
-    let apiHandler = APIHandler()
     let newAPIHandler = NewAPIHandler()
     let dispatchGroup = DispatchGroup()
     var user: MutableAccount?
@@ -69,6 +68,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
         }
         profile.prefetchDataSource = self
         profile.dataSource = self
+        profile.delegate = self
         profile.register(UINib(nibName: "ProfileCell", bundle: nil), forCellWithReuseIdentifier: "ProfileSample")
         profile.register(UINib(nibName: "SupplementaryView", bundle: nil), forSupplementaryViewOfKind: "Header", withReuseIdentifier: "SupplementarySample")
         profile.register(UINib(nibName: "FeedCell", bundle: nil), forCellWithReuseIdentifier: "FeedSample")
@@ -87,6 +87,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
                 self.getData()
             })
         } else {
+            print("123465")
             getData()
         }
         
@@ -106,22 +107,28 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     private func getData() {
         dispatchGroup.enter()
         self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
+            print("321")
 //                CATransaction.begin()
 //                CATransaction.setCompletionBlock({
+//                    (self.profile.collectionViewLayout as! PinterestLayout).reset()
+//
 //                    self.profile.collectionViewLayout.invalidateLayout()
 //                })
             self.profile.reloadData()
+//            self.profile.collectionViewLayout.invalidateLayout()
 //                CATransaction.commit()
             DispatchQueue.global().async {
                 Darwin.sleep(1)
                 DispatchQueue.main.async {
+                    print("worked")
 //                    self.profile.collectionViewLayout.prepare()
+                    (self.profile.collectionViewLayout as! PinterestLayout).reset()
                     self.profile.collectionViewLayout.invalidateLayout()
                 }
             }
         })
         dispatchGroup.enter()
-        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: false , range: .limit(2), completionHandler: {result in
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: false , range: .limit(40), completionHandler: {result in
             guard let result = result else {
                 return
             }
@@ -139,7 +146,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
             self.dispatchGroup.leave()
         })
         dispatchGroup.enter()
-        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: true, range: .limit(2), completionHandler: {result in
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: true, range: .limit(40), completionHandler: {result in
             guard let result = result else {
                 return
             }
@@ -160,11 +167,11 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     }
     
     func getNextPosts(_ id: String, mediaOnly: Bool) {
-        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: mediaOnly , range: .max(id: id, limit: 2), completionHandler: {statuses in
+        
+        newAPIHandler.getUserPosts(withID: user!.id, onlyMedia: mediaOnly , range: .max(id: id, limit: 40), completionHandler: {statuses in
             guard let statuses = statuses else {
                 return
             }
-            print("started")
 //            if !statuses.isEmpty {
 //                statuses.removeFirst()
 //            }
@@ -181,7 +188,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
             statuses.forEach({item in
                 if !item.mediaAttachments.isEmpty {
                     self.dispatchGroup.enter()
-                    print("item \(item.id)")
                     KingfisherManager.shared.retrieveImage(with: ImageResource(downloadURL: URL(string: item.mediaAttachments[0].previewURL)!, cacheKey: item.mediaAttachments[0].previewURL), completionHandler: {_ in
                         self.dispatchGroup.leave()
                     })
@@ -189,11 +195,13 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
             })
             
             self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
-                
-//                self.profile.collectionViewLayout.prepare()
-                self.profile.insertItems(at: indexes)
-                print("got feed")
-                self.profile.isHidden = false
+                self.profile.isUserInteractionEnabled = false
+                self.profile.performBatchUpdates({
+                    self.profile.insertItems(at: indexes)
+                    self.profile.isHidden = false
+                }, completion: {result in
+                    self.profile.isUserInteractionEnabled = true
+                })
             })
             self.dispatchGroup.leave()
         })
@@ -234,18 +242,18 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (profile.collectionViewLayout as! PinterestLayout).mode == .collectionView {
-            if indexPath.item == userMediaPosts.endIndex - 1 {
-                getNextPosts(userMediaPosts[indexPath.item].id, mediaOnly: true)
-            }
+//            if indexPath.item == userMediaPosts.endIndex - 1 {
+//                getNextPosts(userMediaPosts[indexPath.item].id, mediaOnly: true)
+//            }
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileSample", for: indexPath) as! ProfileCell
             
             cell.mainImage.kf.cancelDownloadTask()
             cell.mainImage.kf.setImage(with: ImageResource(downloadURL: URL(string: userMediaPosts[indexPath.item].mediaAttachments[0].previewURL)!, cacheKey: userMediaPosts[indexPath.item].mediaAttachments[0].previewURL), placeholder: UIImage(named: "new7"))
             return cell
         }
-        if indexPath.item == userPosts.endIndex - 1 {
-            getNextPosts(userPosts[indexPath.item].id, mediaOnly: false)
-        }
+//        if indexPath.item == userPosts.endIndex - 1 {
+//            getNextPosts(userPosts[indexPath.item].id, mediaOnly: false)
+//        }
         if userPosts[indexPath.item].mediaAttachments.isEmpty {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedCellWithoutContent", for: indexPath) as! FeedCellWithoutContent
             cell.post = userPosts[indexPath.item]
@@ -271,6 +279,32 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegate
+
+extension ProfileViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        print(indexPath.item)
+        guard let layout = collectionView.collectionViewLayout as? PinterestLayout else {
+            return
+        }
+        let index = IndexPath(item: indexPath.item - 1, section: 0)
+        guard (collectionView.cellForItem(at: index) != nil) else {
+            return
+        }
+        print("getting")
+        if layout.mode == .tableView {
+            if userPosts.endIndex - 1 == indexPath.item {
+                getNextPosts(userPosts[indexPath.item].id, mediaOnly: false)
+            }
+        } else if layout.mode == .collectionView {
+            if userMediaPosts.endIndex - 1 == indexPath.item {
+                getNextPosts(userMediaPosts[indexPath.item].id, mediaOnly: true)
+            }
+        }
+    }
+    
+}
+
 // MARK: - HeaderDelegate
 
 extension ProfileViewController: HeaderDelegate {
@@ -278,9 +312,10 @@ extension ProfileViewController: HeaderDelegate {
         let layout = profile.collectionViewLayout as! PinterestLayout
         if index == 0 {
             layout.mode = .tableView
+            
             CATransaction.begin()
             CATransaction.setCompletionBlock({
-//                self.profile.collectionViewLayout.invalidateLayout()
+                self.profile.collectionViewLayout.invalidateLayout()
             })
             self.profile.reloadData()
             CATransaction.commit()
@@ -288,7 +323,7 @@ extension ProfileViewController: HeaderDelegate {
             layout.mode = .collectionView
             CATransaction.begin()
             CATransaction.setCompletionBlock({
-//                self.profile.collectionViewLayout.invalidateLayout()
+                self.profile.collectionViewLayout.invalidateLayout()
             })
             self.profile.reloadData()
             CATransaction.commit()
@@ -370,18 +405,11 @@ extension ProfileViewController: PinterestLayoutDelegate {
                 })
 //                dispatchGroup.wait()
                 cell.layoutSubviews()
-                print(cell.post?.id)
-                print("cell size: \(cell.frame.size)")
-                print("cell desired size: \(cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))")
                 let aspectRatio = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
                 let layout = collectionView.collectionViewLayout as! PinterestLayout
                 let height = (collectionView.frame.width - layout.cellPadding * 2) / aspectRatio
                 let difference = height - cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
                 let cellFinalSize = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + difference)
-                print("difference: \(difference)")
-                print("final size: \(cellFinalSize)")
-                print("current size: \(cell.mainImage.frame.size)")
-                print("desired size: \(cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
                 return cellFinalSize
             }
         }
@@ -395,7 +423,6 @@ extension ProfileViewController: PinterestLayoutDelegate {
         supplementaryView.user = user
         supplementaryView.fill()
         supplementaryView.layoutSubviews()
-        print("supsize: \(supplementaryView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize))")
         return supplementaryView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
     }
 }

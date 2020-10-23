@@ -103,17 +103,23 @@ class FiltersController: UIViewController {
                 return
             }
             if let text = self.imageDescription.text, text != self.placeholderText {
-                self.apiHandler.post(text: text, image: image, completion: {
-                    DispatchQueue.main.async {
-                        self.tabBarController?.selectedIndex = 0
-                    }
-                })
+                DispatchQueue.global().async {
+                    self.apiHandler.post(text: text, image: image, completion: {
+                        DispatchQueue.main.async {
+                            self.tabBarController?.selectedIndex = 0
+                        }
+                    })
+                }
+                
             } else {
-                self.apiHandler.post(text: "", image: image, completion: {
-                    DispatchQueue.main.async {
-                        self.tabBarController?.selectedIndex = 0
-                    }
-                })
+                DispatchQueue.global().async {
+                    self.apiHandler.post(text: "", image: image, completion: {
+                        DispatchQueue.main.async {
+                            self.tabBarController?.selectedIndex = 0
+                        }
+                    })
+                }
+                
             }
         }
     }
@@ -172,7 +178,6 @@ extension FiltersController: UICollectionViewDelegate, UICollectionViewDelegateF
         if photo == UIImage(named: "new8") {
             return
         }
-        print("orientation: \(photo.imageOrientation.rawValue)")
         let text = filters[indexPath.item]
         DispatchQueue.global(qos: .utility).async {
             let inputImage = CIImage(image: photo)

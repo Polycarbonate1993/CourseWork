@@ -82,7 +82,7 @@ class SupplementaryView: UICollectionReusableView {
                         }
                     }
                 case .failure(let error):
-                    print("error: \(error.asOAuth2Error.description)")
+                    print("error: \(error.localizedDescription)")
                 }
             })
         }
@@ -176,7 +176,7 @@ class SupplementaryView: UICollectionReusableView {
                 }
             case .failure(let error):
                 self.followButton.isUserInteractionEnabled = true
-                print("error: \(error.asOAuth2Error.description)")
+                print("error: \(error.localizedDescription)")
             }
         })
 //        if currentUserFollowing == false {

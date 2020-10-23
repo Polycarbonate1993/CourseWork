@@ -7,9 +7,7 @@
 //
 
 import UIKit
-
 import MastodonKit
-import p2_OAuth2
 import AuthenticationServices
 import LocalAuthentication
 
@@ -29,18 +27,17 @@ class ViewController: UIViewController {
         serverNameField.isEnabled = false
         serverNameField.delegate = self
         hideKeyboardWhenTappedAround()
+        serverNameField.attributedPlaceholder = NSAttributedString(string: "mstdn.social", attributes: [NSAttributedString.Key.foregroundColor: UIColor(named: "placeholderText")!])
     }
     
     override func viewDidAppear(_ animated: Bool) {
         let check = checkKeychain()
-        print("token check: \(check)")
         if check.0 {
             mastodonApiHandler = Client(baseURL: "https://\(check.2)", accessToken: check.1, session: URLSession.shared)
             let request = Accounts.currentUser()
             mastodonApiHandler.run(request, completion: {result in
                 switch result {
                 case .success(_, _):
-                    
                     DispatchQueue.main.async {
                         let newVC = self.storyboard?.instantiateViewController(identifier: "TabBarController") as! TabBarController
                         UITabBar.setTransparentTabBar()
@@ -117,20 +114,17 @@ class ViewController: UIViewController {
         let url = URL(string: "https://\(server)/oauth/authorize?client_id=\(clientID)&scope=read+write+follow&redirect_uri=photonetwork://oauth-callback&response_type=code")!
         let session = ASWebAuthenticationSession(url: url, callbackURLScheme: "photonetwork") { callbackURL, error in
             guard error == nil, let url = callbackURL else {
-                print("nothing")
-                print(error?.localizedDescription)
+                self.generateAlert(title: "Oops!", message: error?.localizedDescription ?? "", buttonTitle: "Try Again Later")
                 return
             }
             guard let code = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.filter({$0.name == "code"}).first?.value else {
                 return
             }
-            print("url: \(code)")
             let request = Login.oauth(clientID: self.clientID, clientSecret: self.clientSecret, scopes: [.read, .write, .follow], redirectURI: "photonetwork://oauth-callback", code: code)
             self.mastodonApiHandler = Client(baseURL: "https://\(server)")
             self.mastodonApiHandler.run(request) { result in
                 switch result {
                 case .success(let settings, _):
-                    print(settings.accessToken)
                     self.mastodonApiHandler.accessToken = settings.accessToken
                     self.tokenToKeychain(.delete)
                     self.tokenToKeychain(.add, token: settings.accessToken)
@@ -140,16 +134,14 @@ class ViewController: UIViewController {
                         UINavigationBar.setTransparentNavigationBar()
                         UITabBar.appearance().tintColor = UIColor(named: "liked")
                         newVC.mastodonApiHandler = NewAPIHandler(accessToken: settings.accessToken, clientID: self.clientID, clientSecret: self.clientSecret, server: "https://\(server)", completionHandler: {
-                            print("in the completion")
                             DispatchQueue.main.async {
-                                print("changing viewcontroller")
                                 UIApplication.shared.delegate?.window??.rootViewController = newVC
                             }
                         })
                         
                     }
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    self.generateAlert(title: "Oops!", message: error.localizedDescription, buttonTitle: "Try Again Later")
                 }
             }
         }
@@ -180,7 +172,6 @@ class ViewController: UIViewController {
         var queryResult: AnyObject?
         
         let status = SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer(&queryResult))
-        print("check status: \(status)")
         if status == errSecSuccess {
             guard let result = queryResult as? [String: Any], let tokenData = result[kSecValueData as String] as? Data, let token = String(data: tokenData, encoding: .utf8), let server = result[kSecAttrAccount as String] as? String else {
                 return (false, "", "")
@@ -202,15 +193,12 @@ class ViewController: UIViewController {
                 query[kSecAttrAccount as String] = self.serverNameField.text as Any
                 query[kSecValueData as String] = token.data(using: .utf8) as Any
                 let response = SecItemAdd(query as CFDictionary, nil)
-                print("add status: \(response)")
             case .update:
                 let attributesToUpdate = [kSecValueData as String: token.data(using: .utf8) as Any,
                                           kSecAttrAccount as String: self.serverNameField.text as Any]
                 let response = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
-                print("update status: \(response)")
             case .delete:
                 let response = SecItemDelete(query as CFDictionary)
-                print("delete status: \(response)")
             }
         }
     }

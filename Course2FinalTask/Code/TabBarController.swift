@@ -10,7 +10,6 @@ import UIKit
 import MastodonKit
 
 class TabBarController: UITabBarController {
-    var dataManager: CoreDataManager!
     var mastodonApiHandler: NewAPIHandler?
     override func viewDidLoad() {
         super.viewDidLoad()

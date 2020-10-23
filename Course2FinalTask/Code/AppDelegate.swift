@@ -8,7 +8,6 @@
 import UIKit
 import CoreData
 import Kingfisher
-import p2_OAuth2
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -63,86 +62,6 @@ extension UIViewController {
             }))
             self.present(newVC, animated: true, completion: nil)
         }
-    }
-}
-
-extension Array {
-    func importFromCoreDataToJSON<T: DecodedJSONData>(_ typeSelected: T.Type) -> [T] {
-//        if let posts = self as? [CoreDataPost] {
-//            var newArray: [Post] = []
-//            for item in posts {
-//                let post = Post()
-//                post.author = item.author
-//                post.authorAvatar = (item.authorAvatar!).base64EncodedString()
-//                post.authorUsername = item.authorUsername
-//                post.createdTime = item.createdTime
-//                post.currentUserLikesThisPost = item.currentUserLikesThisPost
-//                post.description = item.postDescription
-//                post.id = item.id
-//                post.image = (item.image!).base64EncodedString()
-//                post.likedByCount = Int(item.likedByCount)
-//                newArray.append(post)
-//            }
-//            return newArray as! [T]
-//        } else if let users = self as? [CoreDataUser] {
-//            var newArray: [User] = []
-//            for item in users {
-//                let user = User()
-//                user.avatar = (item.avatar!).base64EncodedString()
-//                user.currentUserFollowsThisUser = item.currentUserFollowsThisUser
-//                user.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
-//                user.followedByCount = Int(item.followedByCount)
-//                user.followsCount = Int(item.followsCount)
-//                user.fullName = item.fullname
-//                user.id = item.id
-//                user.username = item.username
-//                newArray.append(user)
-//            }
-//            return newArray as! [T]
-//        }
-        return []
-    }
-    
-    func exportToCoreDataFromDecodedJSONData<T: NSManagedObject>(withMarker: Bool = false, _ selectedType: T.Type) -> [T] {
-//        if let posts = self as? [Post] {
-//            var newArray: [CoreDataPost] = []
-//            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager
-//            for item in posts {
-//                let coreDataPost = dataManager!.createObject(from: CoreDataPost.self)
-//                coreDataPost.author = item.author
-//                coreDataPost.authorAvatar = fromStringURLToData(item.authorAvatar)
-//                coreDataPost.authorUsername = item.authorUsername
-//                coreDataPost.createdTime = item.createdTime
-//                coreDataPost.id = item.id
-//                coreDataPost.image = fromStringURLToData(item.image)
-//                coreDataPost.likedByCount = Int16(item.likedByCount)
-//                coreDataPost.postDescription = item.description
-//                coreDataPost.currentUserLikesThisPost = item.currentUserLikesThisPost
-//                coreDataPost.inFeed = withMarker
-//                newArray.append(coreDataPost)
-//            }
-////            print(newArray)
-//            return newArray as! [T]
-//        } else if let users = self as? [User] {
-//            var newArray: [CoreDataUser] = []
-//            let dataManager = ((UIApplication.shared.delegate as! AppDelegate).window?.rootViewController as! TabBarController).dataManager!
-//            for item in users {
-//                let coreDataUser = dataManager.createObject(from: CoreDataUser.self)
-//                coreDataUser.avatar = fromStringURLToData(item.avatar)
-//                coreDataUser.currentUserFollowsThisUser = item.currentUserFollowsThisUser
-//                coreDataUser.currentUserIsFollowedByThisUser = item.currentUserIsFollowedByThisUser
-//                coreDataUser.followedByCount = Int16(item.followedByCount)
-//                coreDataUser.followsCount = Int16(item.followsCount)
-//                coreDataUser.fullname = item.fullName
-//                coreDataUser.id = item.id
-//                coreDataUser.username = item.username
-//                coreDataUser.isCurrentUser = withMarker
-//                newArray.append(coreDataUser)
-//            }
-//            print(newArray)
-//            return newArray as! [T]
-//        }
-        return []
     }
 }
 
@@ -207,8 +126,6 @@ extension UIColor {
 
 extension UITabBar {
     static func setTransparentTabBar() {
-//        UITabBar.appearance().backgroundImage = UIImage()
-//        UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().clipsToBounds = true
         UITabBar.appearance().unselectedItemTintColor = UIColor(named: "unselected")
     }
@@ -220,3 +137,4 @@ extension UINavigationBar {
         UINavigationBar.appearance().shadowImage = UIImage()
     }
 }
+

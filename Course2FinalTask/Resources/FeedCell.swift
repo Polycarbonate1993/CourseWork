@@ -25,7 +25,6 @@ class FeedCell: UICollectionViewCell {
     @IBOutlet weak var descriptionText: UITextView!
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var displayName: UILabel!
-    let apiHandler = APIHandler()
     let newAPIHandler = NewAPIHandler()
     var post: MutableStatus? 
     var emojiSource: [String: EmojiSource] = [:]
