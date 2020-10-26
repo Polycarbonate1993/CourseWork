@@ -58,7 +58,6 @@ class FeedCell: UICollectionViewCell {
         guard let status = post else {
             return
         }
-        
         avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: status.account.avatar)!, cacheKey: status.account.avatar))
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .long
@@ -86,7 +85,6 @@ class FeedCell: UICollectionViewCell {
         likes.textColor = UIColor(named: "label")
         username.text = "@" + status.account.acct
         username.textColor = UIColor(named: "secondaryLabel")
-        
         if status.favourited! {
             likeButton.tintColor = UIColor(named: "liked")
         } else {
@@ -96,44 +94,29 @@ class FeedCell: UICollectionViewCell {
             completion?()
         })
     }
-    
-//    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-//        setNeedsLayout()
-//        layoutIfNeeded()
-//        let newLayoutAttributes = layoutAttributes
-//        newLayoutAttributes.size.width = UIScreen.main.bounds.width - 20
-//        let aspectRatio = mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).width / mainImage.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
-//        newLayoutAttributes.size.height = (UIScreen.main.bounds.width - 20) / aspectRatio + descriptionText.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height + avatar.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + likes.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height + 49
-//        self.contentView.layer.cornerRadius = newLayoutAttributes.size.width / 10
-//        return newLayoutAttributes
-//    }
 
     // MARK: - Action handling
     
     @objc func doubleTap() {
-//        (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
-//            guard let newPost = likedPost as? Post else {
-//                return
-//            }
-//            self.post = newPost
-//            DispatchQueue.main.async {
-//                self.likes.text = "Likes: \(self.post!.likedByCount!)"
-//                self.bigLike.alpha = 0
-//                self.bigLike.isHidden = false
-//                self.likeButton.tintColor = .systemBlue
-//                UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-//                    self.bigLike.alpha = 1
-//                }, completion: { _ in
-//                    self.bigLike.alpha = 1
-//                    UIView.animate(withDuration: 0.3, delay: 0.2, options: .curveEaseOut, animations: {
-//                        self.bigLike.alpha = 0
-//                    }, completion: { _ in
-//                        self.bigLike.alpha = 0
-//                        self.bigLike.isHidden = true
-//                    })
-//                })
-//            }
-//        })
+        guard let post = post else {
+            return
+        }
+        if post.favourited == false {
+            bigLike.alpha = 0
+            bigLike.isHidden = false
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
+                self.bigLike.alpha = 1
+            }, completion: { _ in
+                self.bigLike.alpha = 1
+                UIView.animate(withDuration: 0.3, delay: 0.2, options: .curveEaseOut, animations: {
+                    self.bigLike.alpha = 0
+                }, completion: { _ in
+                    self.bigLike.alpha = 0
+                    self.bigLike.isHidden = true
+                    self.like()
+                })
+            })
+        }
     }
     
     @objc func toProfile() {
@@ -165,10 +148,15 @@ class FeedCell: UICollectionViewCell {
     }
     
     @IBAction func tappedLikeButton(_ sender: Any) {
+        like()
+    }
+    
+    func like() {
         guard let post = post else {
             return
         }
         likeButton.isUserInteractionEnabled = false
+        mainImage.isUserInteractionEnabled = false
         if post.favourited != nil, post.favourited! {
             UIView.animate(withDuration: 0, delay: 0, options: [], animations: {
                 self.likeButton.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
@@ -183,13 +171,13 @@ class FeedCell: UICollectionViewCell {
                             }
                             return
                         }
-//                        self.post = status
                         self.post?.favourited = status.favourited
                         self.post?.favouritesCount = status.favouritesCount == self.post?.favouritesCount ? self.post!.favouritesCount - 1 : status.favouritesCount
                         DispatchQueue.main.async {
                             self.likeButton.tintColor = UIColor(named: "unliked")
                             self.likes.text = "Likes: \(post.favouritesCount)"
                             self.likeButton.isUserInteractionEnabled = true
+                            self.mainImage.isUserInteractionEnabled = true
                         }
                     })
                 })
@@ -205,46 +193,25 @@ class FeedCell: UICollectionViewCell {
                         guard let status = status else {
                             DispatchQueue.main.async {
                                 self.likeButton.isUserInteractionEnabled = true
+                                self.mainImage.isUserInteractionEnabled = true
                             }
                             return
                         }
-//                        self.post = status
                         self.post?.favourited = status.favourited
                         self.post?.favouritesCount = status.favouritesCount
                         DispatchQueue.main.async {
                             self.likeButton.tintColor = UIColor(named: "liked")
                             self.likes.text = "Likes: \(post.favouritesCount)"
                             self.likeButton.isUserInteractionEnabled = true
+                            self.mainImage.isUserInteractionEnabled = true
                         }
                     })
                 })
             })
         } else {
             likeButton.isUserInteractionEnabled = true
+            mainImage.isUserInteractionEnabled = true
         }
-//        if likeButton.tintColor == .lightGray {
-//            (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
-//                guard let newPost = likedPost as? Post else {
-//                    return
-//                }
-//                self.post = newPost
-//                DispatchQueue.main.async {
-//                    self.likeButton.tintColor = .systemBlue
-//                    self.likes.text = "Likes: \(self.post!.likedByCount!)"
-//                }
-//            })
-//        } else {
-//            (delegate as? FeedViewController)?.apiHandler.get(.unlike, withID: post?.id, completionHandler: {unlikedPost in
-//                guard let newPost = unlikedPost as? Post else {
-//                    return
-//                }
-//                self.post = newPost
-//                DispatchQueue.main.async {
-//                    self.likeButton.tintColor = .lightGray
-//                    self.likes.text = "Likes: \(self.post!.likedByCount!)"
-//                }
-//            })
-//        }
     }
 }
 

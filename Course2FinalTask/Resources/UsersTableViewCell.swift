@@ -32,10 +32,7 @@ class UsersTableViewCell: UITableViewCell {
         guard let user = user else {
             return
         }
-        
         avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: user.avatar)!, cacheKey: user.avatar))
         displayName.text = user.username
-        
-        print("coorner: \(avatar.layer.cornerRadius), height: \(avatar.bounds.height)")
     }
 }

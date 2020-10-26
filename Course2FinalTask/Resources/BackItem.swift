@@ -71,7 +71,6 @@ class BackItem: UIControl {
         shadowView.layer.shadowColor = UIColor.black.cgColor
         shadowView.layer.shadowOffset = CGSize(width: 2, height: 2)
         shadowView.layer.shadowOpacity = 0.6
-//        layer.borderWidth = 3
         addSubview(shadowView)
         addSubview(buttonLabel)
         
@@ -97,8 +96,4 @@ class BackItem: UIControl {
             })
         })
     }
-    
-//    override func draw(_ rect: CGRect) {
-//        backgroundColor = .clear
-//    }
 }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -67,6 +70,7 @@
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bigLike" translatesAutoresizingMaskIntoConstraints="NO" id="H6z-yY-9Mm">
                                 <rect key="frame" x="157" y="223" width="100" height="100"/>
+                                <color key="tintColor" name="liked"/>
                             </imageView>
                             <textView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" scrollEnabled="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Gy-8y-U8B">
                                 <rect key="frame" x="15" y="500" width="384" height="161"/>
@@ -90,7 +94,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="p7o-q6-gC8" firstAttribute="leading" secondItem="vMD-nx-7wU" secondAttribute="trailing" constant="5" id="083-PN-I9P"/>
                             <constraint firstAttribute="trailing" secondItem="2Gy-8y-U8B" secondAttribute="trailing" constant="15" id="0go-GA-jme"/>
@@ -120,13 +124,13 @@
                     </view>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="ZIA-jk-sE5" secondAttribute="bottom" id="R1S-ct-p6a"/>
                 <constraint firstAttribute="trailing" secondItem="ZIA-jk-sE5" secondAttribute="trailing" id="RDq-24-RYh"/>
                 <constraint firstItem="ZIA-jk-sE5" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="ZgM-Bx-PFo"/>
                 <constraint firstItem="ZIA-jk-sE5" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="y4V-km-QgO"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="411" height="1224"/>
             <connections>
                 <outlet property="avatar" destination="Fi2-Ir-4Hl" id="MZp-ML-M2j"/>
@@ -146,5 +150,11 @@
     <resources>
         <image name="bigLike" width="100" height="100"/>
         <image name="like" width="25" height="25"/>
+        <namedColor name="liked">
+            <color red="1" green="0.0" blue="0.36300000548362732" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

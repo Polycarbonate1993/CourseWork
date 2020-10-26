@@ -68,7 +68,6 @@ class ViewController: UIViewController {
                                 })
                             } else {
                                 DispatchQueue.main.async {
-    //                                biometric authentification goes here
                                     UIApplication.shared.delegate?.window??.rootViewController = newVC
                                 }
                             }
@@ -150,17 +149,6 @@ class ViewController: UIViewController {
         session.start()
     }
     
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     private func checkKeychain() -> (Bool, String, String) {
         let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
                                     kSecAttrService as String: "Mastodon" as Any,
@@ -192,13 +180,13 @@ class ViewController: UIViewController {
             case .add:
                 query[kSecAttrAccount as String] = self.serverNameField.text as Any
                 query[kSecValueData as String] = token.data(using: .utf8) as Any
-                let response = SecItemAdd(query as CFDictionary, nil)
+                SecItemAdd(query as CFDictionary, nil)
             case .update:
                 let attributesToUpdate = [kSecValueData as String: token.data(using: .utf8) as Any,
                                           kSecAttrAccount as String: self.serverNameField.text as Any]
-                let response = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
+                SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
             case .delete:
-                let response = SecItemDelete(query as CFDictionary)
+                SecItemDelete(query as CFDictionary)
             }
         }
     }

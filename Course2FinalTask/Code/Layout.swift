@@ -14,17 +14,16 @@ protocol PinterestLayoutDelegate: AnyObject {
     func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize?
 }
 
-
+@IBDesignable
 class PinterestLayout: UICollectionViewLayout {
     
     internal enum Mode {
         case tableView
         case collectionView
     }
-  // 1
+    
     weak var delegate: PinterestLayoutDelegate?
 
-  // 2
     @IBInspectable
     var numberOfColumns: Int = 3
     
@@ -38,11 +37,9 @@ class PinterestLayout: UICollectionViewLayout {
         }
     }
 
-  // 3
     private var cache: [UICollectionViewLayoutAttributes] = []
     private var cacheForSupplementaryView: [UICollectionViewLayoutAttributes] = []
 
-  // 4
     private var contentHeight: CGFloat = 0
 
     private var contentWidth: CGFloat {
@@ -53,26 +50,22 @@ class PinterestLayout: UICollectionViewLayout {
         return collectionView.bounds.width - (insets.left + insets.right)
     }
 
-  // 5
     override var collectionViewContentSize: CGSize {
         return CGSize(width: contentWidth, height: contentHeight)
     }
   
     override func prepare() {
-    // 1
         guard let collectionView = collectionView, collectionView.numberOfSections != 0, cache.isEmpty, cacheForSupplementaryView.isEmpty else {
             return
         }
         cacheForSupplementaryView = []
         cache = []
         contentHeight = 0
-    // 2
         if delegate?.collectionView(collectionView, kind: "Header", sizeForTextAtIndexPath: IndexPath(item: 0, section: 0))?.height != nil {
             let supplementaryAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "Header", with: IndexPath(item: 0, section: 0))
             supplementaryAttributes.frame = CGRect(x: 0, y: 0, width: contentWidth, height: delegate?.collectionView(collectionView, kind: "Header", sizeForTextAtIndexPath: IndexPath(item: 0, section: 0))?.height ?? 1)
             cacheForSupplementaryView.append(supplementaryAttributes)
         }
-        
         
         switch mode {
         case .collectionView:
@@ -83,8 +76,6 @@ class PinterestLayout: UICollectionViewLayout {
                 }
                 var column = 0
                 var yOffset: [CGFloat] = .init(repeating: (cacheForSupplementaryView.isEmpty ? 0 : cacheForSupplementaryView[0].frame.height) + cellPadding, count: numberOfColumns)
-              
-            // 3
                 for item in 0..<collectionView.numberOfItems(inSection: 0) {
                     let indexPath = IndexPath(item: item, section: 0)
                     let photoSize = delegate?.collectionView(collectionView, sizeForPhotoAtIndexPath: indexPath) ?? CGSize(width: 1, height: 1)
@@ -112,7 +103,6 @@ class PinterestLayout: UICollectionViewLayout {
                 yOffset += cellHeight + cellPadding
             }
         }
-        
     }
     
     override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
@@ -194,8 +184,6 @@ class PinterestLayout: UICollectionViewLayout {
   
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
-    
-    // Loop through the cache and look for items in the rect
         for attributes in cache {
             if attributes.frame.intersects(rect) {
                 visibleLayoutAttributes.append(attributes)
@@ -206,12 +194,10 @@ class PinterestLayout: UICollectionViewLayout {
                 visibleLayoutAttributes.append(attributes)
             }
         }
-        
         return visibleLayoutAttributes.isEmpty ? nil : visibleLayoutAttributes
     }
   
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        
         return cache.isEmpty ? nil : cache[indexPath.item]
     }
     
@@ -224,5 +210,4 @@ class PinterestLayout: UICollectionViewLayout {
         cacheForSupplementaryView.removeAll()
         prepare()
     }
-    
 }

@@ -187,8 +187,6 @@ class RoundedSegmentedControl: UIControl {
                 })
             }
         }
-        
-        
     }
     
     override func draw(_ rect: CGRect) {

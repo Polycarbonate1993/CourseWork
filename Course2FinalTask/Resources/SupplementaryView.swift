@@ -156,7 +156,6 @@ class SupplementaryView: UICollectionReusableView {
                             self.followButton.tintColor = UIColor(named: "liked")
                         }
                     })
-                    
                 } else {
                     self.newAPIHandler.unfollow(id: self.user.id, {account in
                         guard let user = account else {
@@ -179,31 +178,6 @@ class SupplementaryView: UICollectionReusableView {
                 print("error: \(error.localizedDescription)")
             }
         })
-//        if currentUserFollowing == false {
-//            (myDelegate as? ProfileViewController)?.apiHandler.get(.follow, withID: user.id, completionHandler: {user in
-//                guard let newUser = user as? User else {
-//                    (self.myDelegate as? UIViewController)?.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                    return
-//                }
-//                self.user = newUser
-//                DispatchQueue.main.async {
-//                    self.followers.text = "Followers: \(self.user!.followedByCount!)"
-//                    self.currentUserFollowing = true
-//                }
-//            })
-//        } else {
-//            (myDelegate as? ProfileViewController)?.apiHandler.get(.unfollow, withID: user.id, completionHandler: {user in
-//                guard let newUser = user as? User else {
-//                    (self.myDelegate as? UIViewController)?.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                    return
-//                }
-//                self.user = newUser
-//                DispatchQueue.main.async {
-//                    self.followers.text = "Followers: \(self.user!.followedByCount!)"
-//                    self.currentUserFollowing = false
-//                }
-//            })
-//        }
     }
 }
 

@@ -182,7 +182,7 @@
         <!--ProfileScene-->
         <scene sceneID="9PB-AX-Ng4">
             <objects>
-                <navigationController title="ProfileScene" id="ZCy-Yd-sXu" customClass="NavigationController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController title="ProfileScene" id="ZCy-Yd-sXu" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="lMg-m3-bYE"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nUY-yr-6NU">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -286,7 +286,7 @@
         <!--FeedScene-->
         <scene sceneID="Dni-Es-dMc">
             <objects>
-                <navigationController storyboardIdentifier="FeedScene" title="FeedScene" navigationBarHidden="YES" hidesBarsOnSwipe="YES" id="GuL-xy-A7o" customClass="NavigationController" customModule="Course2FinalTask" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="FeedScene" title="FeedScene" navigationBarHidden="YES" hidesBarsOnSwipe="YES" id="GuL-xy-A7o" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="0zQ-SH-tzk"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="HeP-nD-kcc">

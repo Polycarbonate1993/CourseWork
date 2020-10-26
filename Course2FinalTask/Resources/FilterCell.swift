@@ -30,7 +30,6 @@ class FilterCell: UICollectionViewCell {
     }
 
     func getFilter() {
-        
         guard let text = filterName, let image = picture else {
             return
         }
@@ -40,7 +39,6 @@ class FilterCell: UICollectionViewCell {
             let result = filter?.outputImage
             let cgImage = self.context.createCGImage(result!, from: result!.extent)
             let uiImage = UIImage(cgImage: cgImage!)
-//            self.picture = image
             DispatchQueue.main.async {
                 self.thumbnail.image = uiImage
             }

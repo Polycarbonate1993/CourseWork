@@ -26,7 +26,7 @@ class UsersTableViewController: UIViewController {
     enum RetrievingCase {
         case followers
         case following
-        case likes(String)
+        case likes(_ id: String)
     }
     
     override func viewDidLoad() {
@@ -41,6 +41,7 @@ class UsersTableViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backItem)
         usersTable.dataSource = self
         usersTable.delegate = self
+        newAPIHandler.delegate = self
         usersTable.register(UINib(nibName: "UsersTableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
         if UITraitCollection.current.userInterfaceStyle == .dark {
             view.backgroundColor = UIColor(patternImage: UIImage(named: "nightcopy.png")!)
@@ -55,7 +56,7 @@ class UsersTableViewController: UIViewController {
         guard let retrievingCase = retrievingCase else {
             return
         }
-        newAPIHandler.getUsers(retrievingCase, withID: hostUser?.id, completionHandler: {result in
+        newAPIHandler.getUsers(retrievingCase, range: .limit(20), withID: hostUser?.id, completionHandler: {result in
             self.users = result
             DispatchQueue.main.async {
                 self.usersTable.reloadData()
@@ -87,6 +88,29 @@ class UsersTableViewController: UIViewController {
             self.navigationController?.popViewController(animated: true)
         })
     }
+    
+    func getUsers(id: String) {
+        guard let retrievingCase = retrievingCase else {
+            return
+        }
+        newAPIHandler.getUsers(retrievingCase, range: .max(id: id, limit: 20), withID: hostUser?.id, completionHandler: {result in
+            guard !result.isEmpty else {
+                return
+            }
+            var indexes: [IndexPath] = []
+            var sectionIndexes = IndexSet(integersIn: self.users.endIndex..<(self.users.endIndex + result.count))
+            for i in 0..<result.count {
+                indexes.append(IndexPath(item: 0, section: self.users.endIndex + i))
+            }
+            self.users.append(contentsOf: result)
+            DispatchQueue.main.async {
+                self.usersTable.beginUpdates()
+                self.usersTable.insertSections(sectionIndexes, with: .middle)
+                self.usersTable.insertRows(at: indexes, with: .middle)
+                self.usersTable.endUpdates()
+            }
+        })
+    }
 }
 
     // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -112,7 +136,6 @@ extension UsersTableViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! UsersTableViewCell
-        
         cell.user = users[indexPath.section]
         cell.fill()
         return cell
@@ -136,7 +159,11 @@ extension UsersTableViewController: UITableViewDataSource, UITableViewDelegate {
                 self.navigationController?.pushViewController(newVC, animated: true)
             })
         })
-        
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if users.endIndex - 1 == indexPath.section {
+            getUsers(id: users[indexPath.section].id)
+        }
+    }
 }

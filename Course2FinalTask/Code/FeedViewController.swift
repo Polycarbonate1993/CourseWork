@@ -42,7 +42,6 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
         } else {
             view.backgroundColor = UIColor(patternImage: UIImage(named: "daycopy.png")!)
         }
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -68,14 +67,11 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
             })
             self.dispatchGroup.notify(queue: DispatchQueue.main, execute: {
                 self.feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-//                self.feed.collectionViewLayout.prepare()
-//                self.feed.collectionViewLayout.invalidateLayout()
                 self.feed.reloadData()
-                
                 DispatchQueue.global().async {
                     Darwin.sleep(1)
                     DispatchQueue.main.async {
-                        self.feed.collectionViewLayout.prepare()
+                        (self.feed.collectionViewLayout as! PinterestLayout).reset()
                         self.feed.collectionViewLayout.invalidateLayout()
                     }
                 }
@@ -130,14 +126,6 @@ class FeedViewController: UIViewController, UICollectionViewDataSource {
             })
         })
     }
-    @IBAction func buttonPressed(_ sender: Any) {
-//        feed.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
-//        for item in (feed.collectionViewLayout as! PinterestLayout).cache {
-//            print("\(item.frame), \(item.indexPath.item)")
-//        }
-        
-//        feed.reloadData()
-    }
     
     // MARK: - UICollectionViewDataSource
     
@@ -178,7 +166,6 @@ extension FeedViewController: UICollectionViewDelegate {
         guard (collectionView.cellForItem(at: index) != nil) else {
             return
         }
-        
         if feedData.endIndex - 1 == indexPath.item {
             getNextPosts(feedData[indexPath.item].id)
         }
@@ -204,24 +191,6 @@ extension FeedViewController: FeedCellDelegate {
                 }
             })
         }
-//        if id == APIHandler.currentUserId {
-//            self.performSegue(withIdentifier: "unwindToProfile", sender: self)
-//        } else {
-//            self.performSegue(withIdentifier: "unwindToProfile", sender: self)
-//            apiHandler.get(.user, withID: id, completionHandler: {user in
-//                guard let user = user as? User else {
-//                    self.generateAlert(title: "Oops!", message: "Something with decoding JSON.", buttonTitle: "OK")
-//                    return
-//                }
-//                DispatchQueue.main.async {
-//                    let newVC = self.storyboard?.instantiateViewController(identifier: "Profile") as! ProfileViewController
-//                    newVC.usernameTitle.title = user.username
-//                    (self.tabBarController?.viewControllers?[2] as! UINavigationController).popToRootViewController(animated: false)
-//                    (self.tabBarController?.viewControllers?[2] as! UINavigationController).pushViewController(newVC, animated: true)
-//                    newVC.user = user
-//                }
-//            })
-//        }
     }
 
     func toLikes(ofPostID id: String) {
@@ -231,8 +200,9 @@ extension FeedViewController: FeedCellDelegate {
             self.navigationController?.pushViewController(newVC, animated: true)
         }
     }
-    
 }
+
+// MARK: - PinterestLayoutDelegate
 
 extension FeedViewController: PinterestLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, sizeForPhotoAtIndexPath indexPath: IndexPath) -> CGSize {
@@ -246,16 +216,13 @@ extension FeedViewController: PinterestLayoutDelegate {
             cell.layoutSubviews()
             return cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
         } else {
-//            dispatchGroup.enter()
             let cell = UINib(nibName: "FeedCell", bundle: nil).instantiate(withOwner: nil, options: nil)[0] as! FeedCell
             cell.frame.size = CGSize(width: collectionView.frame.width - layout.cellPadding * 2, height: collectionView.frame.height)
             cell.translatesAutoresizingMaskIntoConstraints = false
             cell.widthAnchor.constraint(equalToConstant: collectionView.frame.width - layout.cellPadding * 2).isActive = true
             cell.post = feedData[indexPath.item]
             cell.fill({
-//                self.dispatchGroup.leave()
             })
-//            dispatchGroup.wait()
             cell.layoutSubviews()
             let aspectRatio = cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width / cell.mainImage.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
             let height = (collectionView.frame.width) / aspectRatio
@@ -268,8 +235,6 @@ extension FeedViewController: PinterestLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, kind: String, sizeForTextAtIndexPath indexPath: IndexPath) -> CGSize? {
         nil
     }
-    
-    
 }
     
    

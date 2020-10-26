@@ -30,14 +30,12 @@ class FeedCellWithoutContent: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         setUpView()
-        // Initialization code
     }
     
     fileprivate func setUpView() {
         avatar.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         username.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toProfile)))
         likes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toLikes)))
-//            self.contentView.layer.cornerRadius = contentView.bounds.size.width / 10
         self.contentView.layer.masksToBounds = true
         self.contentView.layer.cornerRadius = contentView.bounds.size.width / 10
         self.layer.masksToBounds = false
@@ -52,7 +50,6 @@ class FeedCellWithoutContent: UICollectionViewCell {
         guard let status = post else {
             return
         }
-        
         avatar.kf.setImage(with: ImageResource(downloadURL: URL(string: status.account.avatar)!, cacheKey: status.account.avatar))
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .long
@@ -87,46 +84,8 @@ class FeedCellWithoutContent: UICollectionViewCell {
         }
         self.setNeedsDisplay()
     }
-//    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-//            
-//        setNeedsLayout()
-//        layoutIfNeeded()
-//            
-//        let size = contentView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
-//        let newLayoutAttributes = layoutAttributes
-//        newLayoutAttributes.size.width = UIScreen.main.bounds.width - 20
-//        newLayoutAttributes.size.height = size.height
-//        self.contentView.layer.cornerRadius = newLayoutAttributes.size.width / 10
-//        return newLayoutAttributes
-//    }
 
         // MARK: - Action handling
-        
-        @objc func doubleTap() {
-    //        (delegate as? FeedViewController)?.apiHandler.get(.like, withID: post?.id, completionHandler: {likedPost in
-    //            guard let newPost = likedPost as? Post else {
-    //                return
-    //            }
-    //            self.post = newPost
-    //            DispatchQueue.main.async {
-    //                self.likes.text = "Likes: \(self.post!.likedByCount!)"
-    //                self.bigLike.alpha = 0
-    //                self.bigLike.isHidden = false
-    //                self.likeButton.tintColor = .systemBlue
-    //                UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-    //                    self.bigLike.alpha = 1
-    //                }, completion: { _ in
-    //                    self.bigLike.alpha = 1
-    //                    UIView.animate(withDuration: 0.3, delay: 0.2, options: .curveEaseOut, animations: {
-    //                        self.bigLike.alpha = 0
-    //                    }, completion: { _ in
-    //                        self.bigLike.alpha = 0
-    //                        self.bigLike.isHidden = true
-    //                    })
-    //                })
-    //            }
-    //        })
-        }
         
         @objc func toProfile() {
             avatar.isUserInteractionEnabled = false
@@ -175,7 +134,6 @@ class FeedCellWithoutContent: UICollectionViewCell {
                                 }
                                 return
                             }
-//                            self.post = status
                             self.post?.favourited = status.favourited
                             self.post?.favouritesCount = status.favouritesCount == self.post?.favouritesCount ? self.post!.favouritesCount - 1 : status.favouritesCount
                             DispatchQueue.main.async {
@@ -200,7 +158,6 @@ class FeedCellWithoutContent: UICollectionViewCell {
                                 }
                                 return
                             }
-//                            self.post = status
                             self.post?.favourited = status.favourited
                             self.post?.favouritesCount = status.favouritesCount
                             DispatchQueue.main.async {

@@ -25,11 +25,8 @@
 		AF87111C244E9E1500F20B53 /* SupplementaryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF87111A244E9E1500F20B53 /* SupplementaryView.xib */; };
 		AF87111F244EA81300F20B53 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF87111D244EA81300F20B53 /* ProfileCell.swift */; };
 		AF871120244EA81300F20B53 /* ProfileCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF87111E244EA81300F20B53 /* ProfileCell.xib */; };
-		AF8AF8342451A88900DB203F /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8AF8332451A88900DB203F /* NavigationController.swift */; };
 		AF9D7572250E138C00749EBC /* SupportingClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9D7571250E138C00749EBC /* SupportingClasses.swift */; };
 		AFB16EAF247BEDD400C22EC2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EAE247BEDD400C22EC2 /* TabBarController.swift */; };
-		AFB16EB4247C570F00C22EC2 /* NewPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EB2247C570F00C22EC2 /* NewPostCell.swift */; };
-		AFB16EB5247C570F00C22EC2 /* NewPostCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB16EB3247C570F00C22EC2 /* NewPostCell.xib */; };
 		AFB16EB7247C645D00C22EC2 /* FiltersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EB6247C645D00C22EC2 /* FiltersController.swift */; };
 		AFB16EBA247C655600C22EC2 /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB16EB8247C655600C22EC2 /* FilterCell.swift */; };
 		AFB16EBB247C655600C22EC2 /* FilterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB16EB9247C655600C22EC2 /* FilterCell.xib */; };
@@ -67,11 +64,8 @@
 		AF87111A244E9E1500F20B53 /* SupplementaryView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SupplementaryView.xib; sourceTree = "<group>"; };
 		AF87111D244EA81300F20B53 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		AF87111E244EA81300F20B53 /* ProfileCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCell.xib; sourceTree = "<group>"; };
-		AF8AF8332451A88900DB203F /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		AF9D7571250E138C00749EBC /* SupportingClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportingClasses.swift; sourceTree = "<group>"; };
 		AFB16EAE247BEDD400C22EC2 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
-		AFB16EB2247C570F00C22EC2 /* NewPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostCell.swift; sourceTree = "<group>"; };
-		AFB16EB3247C570F00C22EC2 /* NewPostCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewPostCell.xib; sourceTree = "<group>"; };
 		AFB16EB6247C645D00C22EC2 /* FiltersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersController.swift; sourceTree = "<group>"; };
 		AFB16EB8247C655600C22EC2 /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		AFB16EB9247C655600C22EC2 /* FilterCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FilterCell.xib; sourceTree = "<group>"; };
@@ -142,7 +136,6 @@
 				AF816BF5244DB08B00663017 /* FeedViewController.swift */,
 				AF871117244E923C00F20B53 /* ProfileViewController.swift */,
 				AF7DD292244FC335009FD0F4 /* UsersTableViewController.swift */,
-				AF8AF8332451A88900DB203F /* NavigationController.swift */,
 				AFB16EAE247BEDD400C22EC2 /* TabBarController.swift */,
 				AFB16EB6247C645D00C22EC2 /* FiltersController.swift */,
 				AFE8F27D24EDB97C005D2E11 /* NewNetworkAPIHandler.swift */,
@@ -168,8 +161,6 @@
 				AF87111E244EA81300F20B53 /* ProfileCell.xib */,
 				AF7DD29424504172009FD0F4 /* UsersTableViewCell.swift */,
 				AF7DD29524504172009FD0F4 /* UsersTableViewCell.xib */,
-				AFB16EB2247C570F00C22EC2 /* NewPostCell.swift */,
-				AFB16EB3247C570F00C22EC2 /* NewPostCell.xib */,
 				AFB16EB8247C655600C22EC2 /* FilterCell.swift */,
 				AFB16EB9247C655600C22EC2 /* FilterCell.xib */,
 				AFF7C38B2504D309000EB635 /* BackItem.swift */,
@@ -265,7 +256,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4835C224AB8C9500A3E84F /* Media.xcassets in Resources */,
-				AFB16EB5247C570F00C22EC2 /* NewPostCell.xib in Resources */,
 				AF7DD29724504172009FD0F4 /* UsersTableViewCell.xib in Resources */,
 				AF816BEE244D995900663017 /* Launch Screen.storyboard in Resources */,
 				AF816BFE244DB1F900663017 /* FeedCell.xib in Resources */,
@@ -336,12 +326,10 @@
 				74B79258202B3254006BCB41 /* AppDelegate.swift in Sources */,
 				AFB16EAF247BEDD400C22EC2 /* TabBarController.swift in Sources */,
 				AFE8F27E24EDB97C005D2E11 /* NewNetworkAPIHandler.swift in Sources */,
-				AFB16EB4247C570F00C22EC2 /* NewPostCell.swift in Sources */,
 				AF7C1ED924F884BF0025316C /* Layout.swift in Sources */,
 				AF87111B244E9E1500F20B53 /* SupplementaryView.swift in Sources */,
 				AFB16EBA247C655600C22EC2 /* FilterCell.swift in Sources */,
 				AF49A40624FB6F6700FB9919 /* RoundedSegmentedControl.swift in Sources */,
-				AF8AF8342451A88900DB203F /* NavigationController.swift in Sources */,
 				AF87111F244EA81300F20B53 /* ProfileCell.swift in Sources */,
 				AF871118244E923C00F20B53 /* ProfileViewController.swift in Sources */,
 				AF7DD293244FC335009FD0F4 /* UsersTableViewController.swift in Sources */,
