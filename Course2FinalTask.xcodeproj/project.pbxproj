@@ -47,7 +47,6 @@
 		74B7925E202B3254006BCB41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		74B79263202B3254006BCB41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		999A951BB6A98112FD3F9CC1 /* Pods-Course2FinalTask.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Course2FinalTask.release.xcconfig"; path = "Target Support Files/Pods-Course2FinalTask/Pods-Course2FinalTask.release.xcconfig"; sourceTree = "<group>"; };
-		AF287E7224A8FCA700D28920 /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 		AF4835C124AB8C9500A3E84F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AF49A40524FB6F6700FB9919 /* RoundedSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedSegmentedControl.swift; sourceTree = "<group>"; };
 		AF7C1ED824F884BF0025316C /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -69,7 +68,6 @@
 		AFB16EB6247C645D00C22EC2 /* FiltersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersController.swift; sourceTree = "<group>"; };
 		AFB16EB8247C655600C22EC2 /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		AFB16EB9247C655600C22EC2 /* FilterCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FilterCell.xib; sourceTree = "<group>"; };
-		AFB3F83824F31D3F00AD940F /* OAuth2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OAuth2.framework; path = Carthage/Build/iOS/OAuth2.framework; sourceTree = "<group>"; };
 		AFCF3C1B24E985250016F5D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		AFD9F4CD24F43AB00055442C /* FeedCellWithoutContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCellWithoutContent.swift; sourceTree = "<group>"; };
 		AFD9F4CE24F43AB00055442C /* FeedCellWithoutContent.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedCellWithoutContent.xib; sourceTree = "<group>"; };
@@ -180,8 +178,6 @@
 		AF287E7124A8FCA700D28920 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AFB3F83824F31D3F00AD940F /* OAuth2.framework */,
-				AF287E7224A8FCA700D28920 /* Kingfisher.framework */,
 				19AFC36990C1D25F258FE0CD /* libPods-Course2FinalTask.a */,
 			);
 			name = Frameworks;
